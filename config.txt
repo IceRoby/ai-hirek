@@ -1,0 +1,256 @@
+# ================================================================
+# HÍRGYŰJTŐ RENDSZER - KONFIGURÁCIÓS FÁJL (config.txt)
+# ================================================================
+#
+# Ez a fájl tartalmaz MINDEN beállítást amit módosíthatsz.
+# Ha valamit változtatni szeretnél, csak ezt a fájlt szerkeszd
+# GitHubon a ceruza (✏️) ikonnal.
+#
+# FORMÁTUM SZABÁLYOK:
+#   config | kulcs | érték
+#   - A három részt | (pipe) karakter választja el
+#   - # karakterrel kezdődő sorok = MEGJEGYZÉSEK (nem futnak le)
+#   - A szóközök a | körül nem számítanak
+#
+# MENTÉS UTÁN: a következő futáskor automatikusan beolvassa
+# ================================================================
+
+
+# ================================================================
+# 1. TÉMA BEÁLLÍTÁSOK
+# ================================================================
+# Ez a legfontosabb szekció. Egy sor átírásával teljesen más
+# témájú híroldallá alakul a rendszer.
+
+
+# ----------------------------------------------------------------
+# 1a. TÉMA KIVÁLASZTÁSA
+# ----------------------------------------------------------------
+# A téma meghatározza a keresési irányokat, az oldal nevét,
+# a kategóriákat és a Google News feedeket.
+#
+# BEÉPÍTETT TÉMÁK - ezeket csak be kell írni, minden automatikus:
+#
+#   ai          → Mesterséges intelligencia hírek
+#   coaching    → Coaching, személyes fejlődés, leadership
+#   marketing   → Digitális marketing, SEO, social media
+#   egeszseg    → Egészség, wellness, orvostudomány
+#   penzugy     → Pénzügy, befektetés, gazdaság
+#   ingatlan    → Ingatlanpiac, befektetés
+#   tech        → Általános tech hírek
+#   uzlet       → Üzleti hírek, vállalati világ
+#   sport       → Sportviiág hírek
+#   jog         → Jogi hírek, szabályozás
+#
+# EGYÉNI TÉMA - ha nem szerepel a listán, angolul add meg:
+#   Pl.: "cybersecurity", "fitness", "crypto", "fashion"
+#   A rendszer automatikusan generál keresési kifejezéseket belőle.
+#
+config | tema | ai
+
+
+# ----------------------------------------------------------------
+# 1b. TÉMA KULCSSZAVAK (opcionális, de hasznos!)
+# ----------------------------------------------------------------
+# Extra kulcsszavak amelyek PONTOSÍTJÁK a keresést.
+# Ezek bekerülnek a webes keresési kifejezések közé,
+# és segítenek relevánsabb híreket találni.
+#
+# MIKOR ÉRDEMES HASZNÁLNI:
+#   - Ha a témán belül egy szűkebb területre fókuszálsz
+#   - Ha vannak specifikus cégek/személyek/termékek amiket követni akarsz
+#   - Ha bizonyos kulcsszavak nélkül nem találja meg amit keresel
+#
+# FORMÁTUM: vesszővel elválasztott kulcsszavak, max 10 db
+#
+# PÉLDÁK témánként:
+#   ai témához:       OpenAI, Claude, Gemini, AGI, robotics
+#   coaching témához: ICF, executive coaching, burnout, reziliencia
+#   marketing témához: TikTok ads, Google Analytics 4, influencer
+#   egeszseg témához: longevity, biohacking, mikrobiom, peptidek
+#   penzugy témához:  ETF, FIRE movement, ingatlan befektetés
+#
+# Ha üresen hagyod (kikommenteled), csak az alap témakeresés fut:
+config | tema_kulcsszavak | OpenAI, Claude, Gemini, AGI, LLM, robotics, AI safety
+
+
+# ----------------------------------------------------------------
+# 1c. KIZÁRT KULCSSZAVAK (opcionális)
+# ----------------------------------------------------------------
+# Olyan szavak amelyek híreit NEM szeretnéd látni.
+# Hasznos ha a téma túl tág és sok nem releváns hír jön be.
+#
+# PÉLDÁK:
+#   ai témához (ha nem kell a crypto AI hype): crypto, NFT, blockchain
+#   marketing témához (ha csak B2B kell): B2C, retail, fashion
+#
+# Ha üresen hagyod, nincs kizárás:
+#config | kizart_kulcsszavak | crypto, NFT, blockchain
+
+
+# ----------------------------------------------------------------
+# 1d. FÓKUSZ RÉGIÓK (opcionális)
+# ----------------------------------------------------------------
+# Milyen földrajzi területekről szeretnél híreket.
+# Ha üresen hagyod, globális híreket hoz.
+#
+# LEHETSÉGES ÉRTÉKEK (vesszővel elválasztva):
+#   magyar, európai, amerikai, globális, ázsiai
+#
+# PÉLDA: csak magyar és európai hírek:
+#   config | fokusz_regiok | magyar, európai
+#
+# Alapértelmezett (globális + magyar):
+config | fokusz_regiok | globális, magyar
+
+
+# ----------------------------------------------------------------
+# 1e. EGYÉNI KERESÉSI KIFEJEZÉSEK (opcionális felülírás)
+# ----------------------------------------------------------------
+# Ha teljesen saját keresési kifejezéseket szeretnél megadni
+# a beépített téma helyett, itt tudod felülírni.
+# Ha ezt megadod, a beépített téma keresései NEM futnak.
+#
+# FORMÁTUM: vesszővel elválasztott keresési kifejezések (max 8)
+# Angolul hatékonyabb, de magyarul is működik.
+#
+# PÉLDA coaching témához egyéni kereséssel:
+#   coaching leadership personal development news,
+#   executive coaching C-suite trends,
+#   ICF coaching certification news,
+#   magyar coaching vezetes hirek
+#
+# Ha ki van kommentelve, az automatikus téma-keresések futnak:
+#config | kereses_feluliras | ide írd a saját keresési kifejezéseket
+
+
+# ----------------------------------------------------------------
+# 1f. OLDAL NEVE ÉS SZÖVEGEI (opcionális felülírás)
+# ----------------------------------------------------------------
+# Ha ki vannak kommentelve, a téma alapján automatikusan generálja.
+# Ha beírod, felülírja az automatikusat.
+
+# Főcím a weboldalon és a böngésző fülön
+#config | oldal_cim | Reggeli AI Hírek
+
+# Kis felirat a főcím felett (nagybetűs lesz automatikusan)
+#config | oldal_alcim | Automatikus napi összefoglaló
+
+# Lábléc szöveg a generálás dátuma mellett
+#config | labléc_szoveg | Minden héten frissül automatikusan
+
+
+# ================================================================
+# 2. TECHNIKAI BEÁLLÍTÁSOK
+# ================================================================
+
+
+# ----------------------------------------------------------------
+# 2a. AI MODELL
+# ----------------------------------------------------------------
+# Melyik Claude modellt használja a script.
+# A modell befolyásolja a minőséget ÉS a költséget.
+#
+# MODELLEK összehasonlítása:
+#
+#   claude-haiku-4-5-20251001  (JELENLEGI)
+#     Ár:      ~$0.01-0.03 / futás
+#     Sebesség: gyors (1-2 perc)
+#     Minőség:  alapszintű, néha pontatlan JSON
+#     Mikor:    teszteléshez, ha a költség a prioritás
+#
+#   claude-sonnet-4-6
+#     Ár:      ~$0.05-0.10 / futás
+#     Sebesség: közepes (2-3 perc)
+#     Minőség:  jó, megbízható, ajánlott éles használatra
+#     Mikor:    napi rendszeres futáshoz
+#
+#   claude-opus-4-5
+#     Ár:      ~$0.20-0.50 / futás
+#     Sebesség: lassabb (3-5 perc)
+#     Minőség:  legjobb, legrészletesebb összefoglalók
+#     Mikor:    hetente egyszer, ha a minőség a prioritás
+#
+config | modell | claude-haiku-4-5-20251001
+
+
+# ----------------------------------------------------------------
+# 2b. HÍREK SZÁMA
+# ----------------------------------------------------------------
+# Hány hírt gyűjtsön össze egy futás alkalmával.
+# Formátum: minimum-maximum (pl. "25-35")
+#
+# AJÁNLOTT ÉRTÉKEK:
+#   10-15  → gyors (~1 perc), olcsó, kevés hír
+#   20-25  → normál, napi futáshoz ajánlott
+#   25-35  → sok hír, lassabb (JELENLEGI BEÁLLÍTÁS)
+#   40-50  → maximum, csak Sonnet/Opus modellel ajánlott
+#            (Haiku-val valószínűleg levágódik a token limit miatt)
+#
+config | hirek_szama | 25-35
+
+
+# ----------------------------------------------------------------
+# 2c. KERESÉSI IDŐ ABLAK
+# ----------------------------------------------------------------
+# Hány napra visszamenőleg keressen híreket.
+#
+# MIKOR SZÁMÍT:
+#   - Az ELSŐ futásnál (még nincs history.txt)
+#   - Ha törlöd a history.txt fájlt (reset)
+#
+# Normál működésben a script a history.txt-ből tudja mikor
+# futott utoljára, és csak azóta megjelent híreket kér.
+#
+# AJÁNLOTT ÉRTÉKEK:
+#   3   → napi futáshoz (csak a legfrissebbek)
+#   7   → heti futáshoz (JELENLEGI BEÁLLÍTÁS)
+#   14  → kéthetente futáshoz
+#   30  → havonta futáshoz
+#
+config | idoablak_nap | 7
+
+
+# ----------------------------------------------------------------
+# 2d. ÖSSZEFOGLALÓ NYELVE
+# ----------------------------------------------------------------
+# Milyen nyelven jelenjenek meg a hírek összefoglalói.
+#
+# LEHETSÉGES ÉRTÉKEK:
+#
+#   magyar  (JELENLEGI)
+#     → Csak magyarul ír összefoglalókat
+#     → Legolcsóbb (1x token)
+#     → Magyar célközönségű weboldalhoz ajánlott
+#
+#   angol
+#     → Csak angolul ír összefoglalókat
+#     → Ugyanolyan olcsó mint a magyar
+#     → Nemzetközi célközönségű weboldalhoz
+#
+#   magyar+angol
+#     → Mindkét nyelven ír összefoglalókat
+#     → ~2x annyi token = ~2x annyi költség!
+#     → Kétnyelvű weboldalhoz
+#
+config | nyelv | magyar
+
+
+# ================================================================
+# 3. ÜTEMEZÉS EMLÉKEZTETŐ
+# ================================================================
+# AZ ÜTEMEZÉST A .github/workflows/daily-news.yml FÁJLBAN
+# KELL BEÁLLÍTANI! (GitHub Actions csak onnan olvassa)
+#
+# JELENLEGI BEÁLLÍTÁS: hetente egyszer, hétfőn reggel 6:00
+#
+# Cron gyors referencia (a yml fájlban):
+#   '0 5 * * 1'     → hétfőnként reggel 6:00 (Budapest télen)
+#   '0 5 * * *'     → minden nap reggel 6:00
+#   '0 5 * * 1-5'   → hétfőtől péntekig reggel 6:00
+#   '0 5 */2 * *'   → kétnaponta reggel 6:00
+#   '0 */6 * * *'   → minden 6 órában
+#
+# IDŐZÓNA: GitHub UTC-ben fut!
+#   Budapest télen (okt-márc) = UTC+1 → 6:00 = cron '0 5'
+#   Budapest nyáron (márc-okt) = UTC+2 → 6:00 = cron '0 4'

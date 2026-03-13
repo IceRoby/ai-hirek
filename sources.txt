@@ -1,75 +1,167 @@
-# AI HÍREK FORRÁSAI - Konfigurációs fájl
-# ==========================================
-# HOGYAN ADJAK HOZZÁ ÚJ FORRÁST:
+# ================================================================
+# AI HÍREK - FORRÁS KONFIGURÁCIÓS FÁJL (sources.txt)
+# ================================================================
 #
-#   rss    | Forrás neve | https://teljes-rss-url.com/feed
+# Ez a fájl tartalmazza az RSS feedeket és domaineket amelyekből
+# a script híreket gyűjt.
+#
+# FORMÁTUM SZABÁLYOK:
+#   rss    | Forrás neve | https://feed-url.com/rss
 #   domain | Forrás neve | example.com
 #
-# Tartalék forrás (nem fut, csak megjegyzés):
-#   #rss   | Forrás neve | https://...
+# MEGJEGYZÉS SZABÁLYOK:
+#   # karakterrel kezdődő sor = megjegyzés, nem fut le
+#   #rss   | Forrás neve | url  → KIKAPCSOLT feed (tartalék)
+#   #domain| Forrás neve | url  → KIKAPCSOLT domain
 #
-# A # karakterrel kezdődő sorok figyelmen kívül maradnak.
-# Statisztika a fájl alján automatikusan frissül minden futáskor.
-# ==========================================
+# HOGYAN AKTIVÁLJ EGY TARTALÉK FEEDET:
+#   1. Keresd meg a #rss kezdetű sort
+#   2. Töröld a # karaktert az elejéről
+#   3. Mentsd el → következő futástól aktív
+#
+# HOGYAN KAPCSOLJ KI EGY FEEDET:
+#   1. Tedd # karaktert a sor elejére
+#   2. Mentsd el → következő futástól inaktív
+#
+# HOGYAN ADJ HOZZÁ ÚJ FEEDET:
+#   Új sort írsz a megfelelő szekcióba:
+#   rss | Saját Forrás Neve | https://example.com/feed.rss
+#
+# STATISZTIKA:
+#   A history.txt fájlban látod melyik feed hány cikket hozott.
+#   Ha egy feed 7+ futáson át 0 cikket hoz → érdemes kikapcsolni
+#   és egy tartalékkal felváltani.
+# ================================================================
 
-# ============================================================
-# ÁLTALÁNOS BEÁLLÍTÁSOK
-# ============================================================
 
-# Kért hírek száma (min-max):
-config | hirek_szama | 25-35
-
-# ============================================================
+# ================================================================
 # AKTÍV RSS FEEDEK
-# ============================================================
+# ================================================================
+# Ezeket a feedeket olvassa be a script minden futáskor.
+# Az RSS feed egy automatikusan frissülő hírlista amit az oldal
+# biztosít - a script ebből szedi az aktuális cikkek címeit,
+# amiket aztán Claude feldolgoz és összefoglal magyarul.
 
-# --- Nagy tech portálok ---
+# --- Nagy tech hírportálok ---
+# The Verge: Megbízhatóan működik, AI-specifikus feed
 rss | The Verge AI         | https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
-rss | TechCrunch AI        | https://techcrunch.com/feed/
+
+# TechCrunch: Startup és tech hírek, teljes feed (AI és egyéb is)
+rss | TechCrunch           | https://techcrunch.com/feed/
+
+# Ars Technica: Mélyebb technikai elemzések
 rss | Ars Technica         | https://feeds.arstechnica.com/arstechnica/index
+
+# Wired: AI és tech kultúra
 rss | Wired AI             | https://www.wired.com/feed/tag/ai/latest/rss
+
+# VentureBeat: AI üzleti hírek
 rss | VentureBeat AI       | https://venturebeat.com/category/ai/feed/
+
+# MIT Technology Review: Tudományos-technológiai megközelítés
 rss | MIT Tech Review AI   | https://www.technologyreview.com/topic/artificial-intelligence/feed
+
+# The Guardian AI szekció
 rss | The Guardian AI      | https://www.theguardian.com/technology/artificialintelligenceai/rss
+
+# ScienceDaily: Tudományos AI hírek és kutatások
 rss | ScienceDaily AI      | https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml
+
+# Unite.AI: Dedikált AI hírportál
 rss | Unite.AI             | https://www.unite.ai/feed/
+
+# DailyAI: Napi AI összefoglalók
 rss | DailyAI              | https://dailyai.com/feed/
 
-# --- Google News (legtöbb forrást aggregálja) ---
+
+# --- Google News feedek ---
+# A Google News aggregálja az összes nagy hírportált.
+# Kulcsszóra keresve a legfrissebb cikkeket adja vissza.
+# Ezek általában a legtöbb cikket hozzák.
+
+# Általános AI hírek angolul
 rss | Google News AI EN    | https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en
+
+# OpenAI és ChatGPT hírek
 rss | Google News OpenAI   | https://news.google.com/rss/search?q=OpenAI+ChatGPT&hl=en&gl=US&ceid=US:en
+
+# Anthropic és Claude hírek
 rss | Google News Anthropic| https://news.google.com/rss/search?q=Anthropic+Claude&hl=en&gl=US&ceid=US:en
+
+# Google AI, Gemini, DeepMind hírek
 rss | Google News Google AI| https://news.google.com/rss/search?q=Google+Gemini+DeepMind&hl=en&gl=US&ceid=US:en
+
+# Meta AI és Llama hírek
 rss | Google News Meta AI  | https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en
+
+# Magyar nyelvű AI hírek
 rss | Google News Magyar AI| https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu
 
-# --- Közösségi / kutatói ---
+
+# --- Közösségi / fejlesztői hírek ---
+# Hacker News: tech fejlesztők közössége, szűrve AI témára
+# A "points=50" csak az 50+ szavazatot kapott bejegyzéseket hozza
+# (kevesebb de jobb minőségű találat)
 rss | Hacker News AI       | https://hnrss.org/frontpage?points=50&q=AI+LLM+GPT
 
-# ============================================================
-# TARTALÉK RSS FEEDEK (# eltávolításával aktiválható)
-# Ha egy aktív feed 0-t hoz 7 napon át, cseréld ezekre
-# ============================================================
 
+# ================================================================
+# TARTALÉK RSS FEEDEK
+# ================================================================
+# Ezek INAKTÍVAK (# karakterrel vannak kikommentezve).
+# Ha egy aktív feed tartósan 0 cikket hoz, cseréld le egyre ezek közül:
+# töröld a # karaktert az adott sor elejéről.
+
+# AI Blog - általános AI hírek
 #rss | AI News Blog        | https://www.artificial-intelligence.blog/ai-news?format=rss
+
+# The Rundown AI - népszerű AI hírlevél
 #rss | The Rundown AI      | https://www.therundown.ai/rss
+
+# Fast Company tech szekció
 #rss | Fast Company AI     | https://www.fastcompany.com/technology/rss
+
+# GeekWire AI szekció
 #rss | GeekWire AI         | https://www.geekwire.com/topic/artificial-intelligence/feed/
+
+# New York Times technológia szekció
 #rss | NYT Technology      | https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml
+
+# Financial Times technológia (előfizetés kellhet a teljes cikkhez)
 #rss | Financial Times AI  | https://www.ft.com/technology?format=rss
+
+# OpenAI hivatalos blog (néha 403-as hibát dob)
 #rss | OpenAI Blog         | https://openai.com/blog/rss
+
+# Google DeepMind blog
 #rss | Google DeepMind     | https://deepmind.google/blog/rss.xml
+
+# Amazon AWS AI blog
 #rss | AWS AI Blog         | https://aws.amazon.com/blogs/machine-learning/feed/
+
+# KDnuggets - adattudomány és AI
 #rss | KDnuggets AI        | https://www.kdnuggets.com/feed
+
+# Analytics Vidhya
 #rss | Analytics Vidhya    | https://www.analyticsvidhya.com/feed/
+
+# MarkTechPost - AI kutatási hírek
 #rss | MarkTechPost        | https://www.marktechpost.com/feed/
+
+# Hacker News teljes frontpage (szűrés nélkül, több találat de zajosabb)
 #rss | Hacker News Front   | https://hnrss.org/frontpage
-#rss | AI 2 People         | https://www.ai2people.com/feed/
+
+# The Conversation AI szekció - tudományos magyarázatok
 #rss | The Conversation AI | https://theconversation.com/us/topics/artificial-intelligence/feed
 
-# ============================================================
-# DOMAINEK (webes kereséshez - Claude ezeket is keresi)
-# ============================================================
+
+# ================================================================
+# AKTÍV DOMAINEK (webes kereséshez)
+# ================================================================
+# Ezeket a domaineket adja át a script a Claude-nak mint
+# "ajánlott keresési helyek". Claude ezeken az oldalakon is
+# keres híreket a webes keresésen keresztül.
+# (Ez NEM RSS - Claude maga keres rájuk a weben)
 
 domain | Axios              | axios.com
 domain | Reuters Tech       | reuters.com
@@ -82,14 +174,14 @@ domain | xAI News           | x.ai
 domain | Runway ML          | runwayml.com
 domain | ITE.hu Magyar AI   | klub.ite.hu
 
-# ============================================================
+
+# ================================================================
 # TARTALÉK DOMAINEK
-# ============================================================
+# ================================================================
 
 #domain | Crunchbase News   | crunchbase.com
 #domain | InfoWorld AI      | infoworld.com
 #domain | eWeek AI          | eweek.com
 #domain | ZDNet AI          | zdnet.com
 #domain | The Register AI   | theregister.com
-
-# [STATISZTIKA_HISTORIA - utolsó 7 nap, automatikusan frissül]
+#domain | TechRepublic AI   | techrepublic.com

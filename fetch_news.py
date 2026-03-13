@@ -25,13 +25,18 @@ RSS_FEEDS = [
     ("Import AI", "https://importai.substack.com/feed"),
     ("The Batch deeplearning.ai", "https://www.deeplearning.ai/the-batch/feed/"),
     # Google News - magyar és angol
-    ("Google News AI (HU)", "https://news.google.com/rss/search?q=mesterséges+intelligencia&hl=hu&gl=HU&ceid=HU:hu"),
+    ("Google News AI (HU)", "https://news.google.com/rss/search?q=mesterseges+intelligencia+AI&hl=hu&gl=HU&ceid=HU:hu"),
     ("Google News AI (EN)", "https://news.google.com/rss/search?q=artificial+intelligence&hl=en&gl=US&ceid=US:en"),
     ("Google News OpenAI", "https://news.google.com/rss/search?q=OpenAI+Anthropic+Gemini&hl=en&gl=US&ceid=US:en"),
-    # Reddit
-    ("Reddit r/artificial", "https://www.reddit.com/r/artificial/.rss"),
-    ("Reddit r/MachineLearning", "https://www.reddit.com/r/MachineLearning/.rss"),
-    ("Reddit r/ChatGPT", "https://www.reddit.com/r/ChatGPT/.rss"),
+    # AI cégek blogjai
+    ("OpenAI Blog", "https://openai.com/blog/rss/"),
+    ("Anthropic News", "https://www.anthropic.com/rss.xml"),
+    ("Google AI Blog", "https://blog.google/technology/ai/rss/"),
+    # Reddit-alternatívák (közösségi AI tartalom)
+    ("Lobste.rs AI", "https://lobste.rs/t/ai.rss"),
+    ("AlphaSignal AI", "https://alphasignal.ai/rss"),
+    ("AI News Newsletter", "https://buttondown.com/ainews/rss"),
+    ("Hacker News AI", "https://hnrss.org/newest?q=AI+artificial+intelligence&count=20"),
     # Hacker News
     ("Hacker News", "https://news.ycombinator.com/rss"),
 ]
@@ -68,7 +73,7 @@ response = client.messages.create(
     tools=[{"type": "web_search_20250305", "name": "web_search"}],
     messages=[{
         "role": "user",
-        "        content": f"""Mai dátum: {today}
+        "content": f"""Mai dátum: {today}
 
 Te egy AI hírigazgató vagy. Feladatod: friss AI híreket keresni és azokról SAJÁT SZAVAKKAL magyar összefoglalókat írni.
 

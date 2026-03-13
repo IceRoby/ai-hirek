@@ -6,7 +6,7 @@ import re
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 today = datetime.date.today().strftime("%Y. %m. %d.")
-now = datetime.datetime.utcnow().strftime("%Y. %m. %d. %H:%M:%S UTC")
+now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %m. %d. %H:%M:%S (Budapest)")
 
 response = client.messages.create(
     model="claude-haiku-4-5-20251001",

@@ -10,10 +10,11 @@ client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 today = datetime.date.today().strftime("%Y. %m. %d.")
 now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %m. %d. %H:%M:%S (Budapest)")
 
-# --- SOURCES.TXT BEOLVASÁSA ---
+# =============================================================
+# 1. SOURCES.TXT BEOLVASÁSA (RSS feedek + domainek)
+# =============================================================
 rss_feeds = []
 domains = []
-stats = []
 
 try:
     with open("sources.txt", "r", encoding="utf-8") as f:
@@ -38,8 +39,34 @@ except Exception as e:
         ("Google News AI", "https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en"),
     ]
 
-# --- RSS GYŰJTÉS ---
+# =============================================================
+# 2. HISTORY.TXT BEOLVASÁSA (utolsó futás dátuma)
+# =============================================================
+last_run = None
+try:
+    with open("history.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("UTOLSO_FUTES:"):
+                last_run = line.replace("UTOLSO_FUTES:", "").strip()
+                break
+    if last_run:
+        print(f"Utolsó futás: {last_run}")
+except:
+    print("history.txt nem található - első futás")
+
+if last_run:
+    date_filter = f"FONTOS: Csak {last_run} UTÁN megjelent híreket hozz! Régebbi híreket NE szerepeltess!"
+else:
+    date_filter = "Csak az elmúlt 7 napban megjelent híreket hozz!"
+
+since_text = last_run if last_run else "az elmúlt 7 napban"
+
+# =============================================================
+# 3. RSS GYŰJTÉS
+# =============================================================
 rss_headlines = []
+rss_stats = []
+
 for name, url in rss_feeds:
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -57,16 +84,19 @@ for name, url in rss_feeds:
                     rss_headlines.append(f"- {title} | {link} [{name}]")
                     count += 1
         print(f"RSS OK: {name} ({count} cikk)")
-        stats.append(f"rss | {name} | OK | {count} cikk")
+        rss_stats.append(f"  {name:<35} OK      {count} cikk")
     except Exception as e:
-        print(f"RSS hiba: {name} - {e}")
-        stats.append(f"rss | {name} | HIBA | {str(e)[:60]}")
+        short_err = str(e)[:50]
+        print(f"RSS hiba: {name} - {short_err}")
+        rss_stats.append(f"  {name:<35} HIBA    {short_err}")
 
 rss_context = "\n".join(rss_headlines[:80])
 domain_list = ", ".join([v for _, v in domains])
 print(f"\nÖsszes RSS cím: {len(rss_headlines)}")
 
-# --- CLAUDE API HÍVÁS ---
+# =============================================================
+# 4. CLAUDE API HÍVÁS
+# =============================================================
 response = client.messages.create(
     model="claude-haiku-4-5-20251001",
     max_tokens=16000,
@@ -77,19 +107,21 @@ response = client.messages.create(
 
 Te egy AI hírigazgató vagy. Feladatod: friss AI híreket keresni és azokról SAJÁT SZAVAKKAL magyar összefoglalókat írni.
 
+{date_filter}
+
 Friss RSS címek kiindulópontként:
 {rss_context}
 
 Végezz 5 webes keresést:
-1. AI news today {today}
-2. OpenAI Anthropic Claude news
-3. Google Gemini DeepMind news
-4. AI startup new model released
+1. AI news {today}
+2. OpenAI Anthropic Claude news this week
+3. Google Gemini DeepMind news this week
+4. AI startup new model released this week
 5. magyar mesterseges intelligencia hirek
 
 Extra keresendő oldalak: {domain_list}
 
-Gyűjts 15-20 egyedi hírt. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
+Gyűjts 15-20 EGYEDI hírt amelyek {since_text} jelentek meg. Régebbi vagy ismétlődő híreket NE szerepeltess. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
 
 Válaszolj KIZÁRÓLAG valid JSON-nal, semmi mással:
 {{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"2-3 mondatos kifejtés: számok, nevek, összefüggések","relevance":"1 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}
@@ -134,52 +166,50 @@ if not news_json:
     print("FALLBACK")
     news_json = {"date": today, "summary": "A hírek betöltése során hiba történt.", "news": []}
 
-# --- STATISZTIKA VISSZAÍRÁSA sources.txt-be (7 napos előzmény) ---
+# =============================================================
+# 5. HISTORY.TXT FRISSÍTÉSE
+# =============================================================
 try:
-    with open("sources.txt", "r", encoding="utf-8") as f:
-        src_content = f.read()
+    # Meglévő history beolvasása
+    history_lines = []
+    try:
+        with open("history.txt", "r", encoding="utf-8") as f:
+            history_lines = f.readlines()
+    except:
+        pass
 
-    # Szétválasztjuk a config és a statisztika részt
-    if "# [STATISZTIKA_HISTORIA]" in src_content:
-        config_part = src_content[:src_content.index("# [STATISZTIKA_HISTORIA]")].rstrip()
-        historia_part = src_content[src_content.index("# [STATISZTIKA_HISTORIA]"):]
-    else:
-        config_part = src_content.rstrip()
-        historia_part = ""
-
-    # Meglévő napi bejegyzések kinyerése
-    entries = re.findall(r'# --- FUTÁS: .+?(?=# --- FUTÁS:|$)', historia_part, re.DOTALL | re.MULTILINE)
-
-    # Csak az utolsó 6 tartjuk meg (+ az új = 7 nap)
-    entries = entries[-6:] if len(entries) >= 6 else entries
+    # Régi UTOLSO_FUTES sor törlése
+    history_lines = [l for l in history_lines if not l.startswith("UTOLSO_FUTES:")]
 
     # Új bejegyzés összeállítása
-    new_entry = f"# --- FUTÁS: {now} ---\n"
-    new_entry += f"# Hírek száma: {len(news_json.get('news', []))} | RSS címek: {len(rss_headlines)}\n"
-    for s in stats:
-        parts = s.split(" | ")
-        if len(parts) >= 4:
-            new_entry += f"#   {parts[1]:<35} {parts[2]:<6} {parts[3]}\n"
-        else:
-            new_entry += f"#   {s}\n"
-    new_entry += "#\n"
+    new_entry = [
+        f"\n--- FUTÁS: {now} ---\n",
+        f"Hírek: {len(news_json.get('news', []))} db | RSS címek: {len(rss_headlines)} db\n",
+    ] + [f"{s}\n" for s in rss_stats]
 
-    entries.append(new_entry)
+    # Régi bejegyzések megtartása (max 7)
+    existing_entries = "".join(history_lines)
+    runs = re.split(r'\n--- FUTÁS:', existing_entries)
+    runs = [r for r in runs if r.strip()]
+    runs = runs[-9:] if len(runs) >= 9 else runs  # max 9 régi + 1 új = 10
 
-    # Összerakjuk a végeredményt
-    historia_block = "\n\n# [STATISZTIKA_HISTORIA - utolsó 7 nap, automatikusan frissül]\n"
-    historia_block += "# Formátum: Forrás neve | OK/HIBA | cikk száma\n"
-    historia_block += "#" + "-"*60 + "\n"
-    for e in entries:
-        historia_block += e
+    # Visszaírás
+    with open("history.txt", "w", encoding="utf-8") as f:
+        f.write(f"UTOLSO_FUTES: {today}\n")
+        f.write(f"# AI Hírek - Futási előzmények (utolsó 7 futás)\n")
+        f.write(f"# Formátum: Forrás neve | OK/HIBA | cikk száma\n")
+        f.write(f"# {'='*55}\n")
+        for r in runs:
+            f.write(f"\n--- FUTÁS:{r}")
+        f.writelines(new_entry)
 
-    with open("sources.txt", "w", encoding="utf-8") as f:
-        f.write(config_part + historia_block)
-    print("Statisztika visszaírva sources.txt-be")
+    print(f"history.txt frissítve ({len(runs)+1} bejegyzés)")
 except Exception as e:
-    print(f"Statisztika írási hiba: {e}")
+    print(f"history.txt írási hiba: {e}")
 
-# Category styles
+# =============================================================
+# 6. HTML GENERÁLÁS
+# =============================================================
 cat_style = {
     "Magyar":       ("🇭🇺", "#e63946"),
     "Nagy cégek":   ("🏢", "#457b9d"),
@@ -268,7 +298,7 @@ html = f"""<!DOCTYPE html>
 <body>
 <div class="container">
   <header>
-    <div class="header-tag">Automatikus napi összefoglaló</div>
+    <div class="header-tag">Automatikus összefoglaló</div>
     <h1>Reggeli<br><em>AI Hírek</em></h1>
     <p class="timestamp">Utoljára frissítve: <strong style="color:var(--accent)">{now}</strong></p>
     <div class="summary-box">{news_json['summary']}</div>
@@ -286,7 +316,7 @@ html = f"""<!DOCTYPE html>
   <p class="news-count">Megjelenített hírek: <span id="count">{total}</span> / {total}</p>
   <div class="news-grid" id="grid">{news_items_html}</div>
   <footer>
-    <p>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong> · Minden reggel 6:00-kor frissül</p>
+    <p>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong></p>
     <div class="legal">
       <p><strong>Jogi nyilatkozat:</strong> Ez az oldal nyilvánosan elérhető AI-vonatkozású hírek automatikusan generált, saját szavakkal írt összefoglalóit tartalmazza tájékoztatási céllal. Az összefoglalók mesterséges intelligencia által készített, önálló átfogalmazások – nem az eredeti cikkek másolatai vagy reprodukciói. Minden hírhez feltüntetésre kerül az eredeti forrás és annak közvetlen hivatkozása. A hivatkozott cikkek szerzői jogai kizárólag az eredeti szerzőket és kiadókat illetik. Amennyiben tartalomeltávolítási kérelme van, kérjük jelezze és haladéktalanul intézkedünk.</p>
       <p><strong>Legal notice:</strong> This site publishes AI-generated summaries of publicly available news articles for informational purposes. All summaries are independently rewritten by an AI model and do not reproduce the original articles. Each item credits and links to the original source. All copyrights remain with the respective authors and publishers. This service operates under fair use principles of commentary and news aggregation. If you are a rights holder and wish to request removal of a summary, please contact us and we will act promptly.</p>

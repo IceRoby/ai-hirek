@@ -2,63 +2,87 @@
 # ==========================================
 # HOGYAN ADJAK HOZZÁ ÚJ FORRÁST:
 #
-# RSS feed hozzáadása:
-#   rss | Forrás neve | https://teljes-rss-url.com/feed
-#
-# Domain hozzáadása (Claude webes kereséshez használja):
+#   rss    | Forrás neve | https://teljes-rss-url.com/feed
 #   domain | Forrás neve | example.com
 #
-# Konkrét URL hozzáadása (Claude webes kereséshez):
-#   url | Forrás neve | https://example.com/blog
+# Tartalék forrás (nem fut, csak megjegyzés):
+#   #rss   | Forrás neve | https://...
 #
-# Megjegyzés: # karakterrel kezdődő sorok figyelmen kívül maradnak
-# Utolsó futás eredményét ld. lent a [STATISZTIKA] szekcióban
+# A # karakterrel kezdődő sorok figyelmen kívül maradnak.
+# Statisztika a fájl alján automatikusan frissül minden futáskor.
 # ==========================================
 
-# --- RSS FEEDEK ---
-rss | The Verge AI | https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
-rss | TechCrunch AI | https://techcrunch.com/category/artificial-intelligence/feed/
-rss | Google News AI | https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en
-rss | Google News OpenAI | https://news.google.com/rss/search?q=OpenAI+ChatGPT&hl=en&gl=US&ceid=US:en
-rss | Google News Anthropic | https://news.google.com/rss/search?q=Anthropic+Claude&hl=en&gl=US&ceid=US:en
-rss | Google News Google AI | https://news.google.com/rss/search?q=Google+Gemini+DeepMind&hl=en&gl=US&ceid=US:en
-rss | Google News Meta AI | https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en
-rss | Google News Magyar AI | https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu
-rss | Hacker News AI | https://hnrss.org/newest?q=AI+LLM+GPT&count=15
-rss | MIT Technology Review AI | https://www.technologyreview.com/topic/artificial-intelligence/feed
-rss | The Guardian AI | https://www.theguardian.com/technology/artificialintelligenceai/rss
-rss | ScienceDaily AI | https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml
-rss | Wired AI | https://www.wired.com/feed/tag/ai/latest/rss
-rss | Financial Times AI | https://www.ft.com/technology?format=rss
-rss | New York Times AI | https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml
-rss | The Rundown AI | https://www.therundown.ai/rss
-rss | Unite.AI | https://www.unite.ai/feed
-rss | DailyAI | https://dailyai.com/feed
-rss | VentureBeat AI | https://venturebeat.com/category/ai/feed
-rss | Fast Company AI | https://www.fastcompany.com/technology/rss
-rss | GeekWire AI | https://www.geekwire.com/topic/artificial-intelligence/feed
-rss | OpenAI Blog | https://openai.com/blog/rss
-rss | Google DeepMind | https://deepmind.google/blog/rss.xml
-rss | AWS AI Blog | https://aws.amazon.com/blogs/machine-learning/feed
+# ============================================================
+# AKTÍV RSS FEEDEK
+# ============================================================
 
-# --- DOMAINEK (webes kereséshez) ---
-domain | Axios | axios.com
-domain | The Guardian AI | theguardian.com
-domain | Bloomberg Tech | bloomberg.com
-domain | Reuters Tech | reuters.com
-domain | Wired AI | wired.com
-domain | Ars Technica | arstechnica.com
-domain | VentureBeat AI | venturebeat.com
-domain | Business Insider | businessinsider.com
-domain | Wall Street Journal | wsj.com
-domain | Time Magazine AI | time.com
-domain | Futurism | futurism.com
-domain | MIT Tech Review | technologyreview.com
-domain | OpenAI Blog | openai.com
-domain | Anthropic News | anthropic.com
-domain | Google AI Blog | blog.google
-domain | xAI News | x.ai
-domain | Runway ML | runwayml.com
-domain | ITE.hu Magyar AI | klub.ite.hu
+# --- Nagy tech portálok ---
+rss | The Verge AI         | https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
+rss | TechCrunch AI        | https://techcrunch.com/feed/
+rss | Ars Technica         | https://feeds.arstechnica.com/arstechnica/index
+rss | Wired AI             | https://www.wired.com/feed/tag/ai/latest/rss
+rss | VentureBeat AI       | https://venturebeat.com/category/ai/feed/
+rss | MIT Tech Review AI   | https://www.technologyreview.com/topic/artificial-intelligence/feed
+rss | The Guardian AI      | https://www.theguardian.com/technology/artificialintelligenceai/rss
+rss | ScienceDaily AI      | https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml
+rss | Unite.AI             | https://www.unite.ai/feed/
+rss | DailyAI              | https://dailyai.com/feed/
 
-# [STATISZTIKA - automatikusan frissül minden futáskor]
+# --- Google News (legtöbb forrást aggregálja) ---
+rss | Google News AI EN    | https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en
+rss | Google News OpenAI   | https://news.google.com/rss/search?q=OpenAI+ChatGPT&hl=en&gl=US&ceid=US:en
+rss | Google News Anthropic| https://news.google.com/rss/search?q=Anthropic+Claude&hl=en&gl=US&ceid=US:en
+rss | Google News Google AI| https://news.google.com/rss/search?q=Google+Gemini+DeepMind&hl=en&gl=US&ceid=US:en
+rss | Google News Meta AI  | https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en
+rss | Google News Magyar AI| https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu
+
+# --- Közösségi / kutatói ---
+rss | Hacker News AI       | https://hnrss.org/frontpage?points=50&q=AI+LLM+GPT
+
+# ============================================================
+# TARTALÉK RSS FEEDEK (# eltávolításával aktiválható)
+# Ha egy aktív feed 0-t hoz 7 napon át, cseréld ezekre
+# ============================================================
+
+#rss | AI News Blog        | https://www.artificial-intelligence.blog/ai-news?format=rss
+#rss | The Rundown AI      | https://www.therundown.ai/rss
+#rss | Fast Company AI     | https://www.fastcompany.com/technology/rss
+#rss | GeekWire AI         | https://www.geekwire.com/topic/artificial-intelligence/feed/
+#rss | NYT Technology      | https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml
+#rss | Financial Times AI  | https://www.ft.com/technology?format=rss
+#rss | OpenAI Blog         | https://openai.com/blog/rss
+#rss | Google DeepMind     | https://deepmind.google/blog/rss.xml
+#rss | AWS AI Blog         | https://aws.amazon.com/blogs/machine-learning/feed/
+#rss | KDnuggets AI        | https://www.kdnuggets.com/feed
+#rss | Analytics Vidhya    | https://www.analyticsvidhya.com/feed/
+#rss | MarkTechPost        | https://www.marktechpost.com/feed/
+#rss | Hacker News Front   | https://hnrss.org/frontpage
+#rss | AI 2 People         | https://www.ai2people.com/feed/
+#rss | The Conversation AI | https://theconversation.com/us/topics/artificial-intelligence/feed
+
+# ============================================================
+# DOMAINEK (webes kereséshez - Claude ezeket is keresi)
+# ============================================================
+
+domain | Axios              | axios.com
+domain | Reuters Tech       | reuters.com
+domain | Bloomberg Tech     | bloomberg.com
+domain | Business Insider   | businessinsider.com
+domain | Wall Street Journal| wsj.com
+domain | Time Magazine AI   | time.com
+domain | Futurism           | futurism.com
+domain | xAI News           | x.ai
+domain | Runway ML          | runwayml.com
+domain | ITE.hu Magyar AI   | klub.ite.hu
+
+# ============================================================
+# TARTALÉK DOMAINEK
+# ============================================================
+
+#domain | Crunchbase News   | crunchbase.com
+#domain | InfoWorld AI      | infoworld.com
+#domain | eWeek AI          | eweek.com
+#domain | ZDNet AI          | zdnet.com
+#domain | The Register AI   | theregister.com
+
+# [STATISZTIKA_HISTORIA - utolsó 7 nap, automatikusan frissül]

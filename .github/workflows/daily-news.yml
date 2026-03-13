@@ -2,9 +2,8 @@ name: Reggeli AI Hírek
 
 on:
   schedule:
-    # Minden reggel 6:00 Budapest idő szerint (UTC+2 nyáron = 4:00 UTC)
     - cron: '0 4 * * *'
-  workflow_dispatch: # Kézi indítás is lehetséges
+  workflow_dispatch:
 
 jobs:
   generate-news:
@@ -15,6 +14,8 @@ jobs:
     steps:
       - name: Kód letöltése
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Python beállítása
         uses: actions/setup-python@v5
@@ -35,4 +36,5 @@ jobs:
           git config --local user.name "AI Hírek Bot"
           git add docs/index.html
           git diff --staged --quiet || git commit -m "🤖 AI hírek frissítve - $(date +'%Y.%m.%d')"
+          git pull --rebase origin main
           git push

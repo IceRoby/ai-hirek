@@ -12,33 +12,18 @@ now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %
 
 # --- RSS FEED GYŰJTÉS ---
 RSS_FEEDS = [
-    # Tech portálok
-    ("TechCrunch AI", "https://techcrunch.com/category/artificial-intelligence/feed/"),
+    # Biztosan működő tech portálok
     ("The Verge AI", "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"),
-    ("Ars Technica AI", "https://feeds.arstechnica.com/arstechnica/technology-lab"),
-    ("VentureBeat AI", "https://venturebeat.com/category/ai/feed/"),
-    ("Wired AI", "https://www.wired.com/feed/tag/ai/latest/rss"),
-    ("MIT Tech Review AI", "https://www.technologyreview.com/feed/"),
-    ("Futurism AI", "https://futurism.com/artificial-intelligence/rss"),
-    ("Reuters Tech", "https://feeds.reuters.com/reuters/technologyNews"),
-    # AI hírlevelek
-    ("Import AI", "https://importai.substack.com/feed"),
-    ("The Batch deeplearning.ai", "https://www.deeplearning.ai/the-batch/feed/"),
-    # Google News - magyar és angol
-    ("Google News AI (HU)", "https://news.google.com/rss/search?q=mesterseges+intelligencia+AI&hl=hu&gl=HU&ceid=HU:hu"),
-    ("Google News AI (EN)", "https://news.google.com/rss/search?q=artificial+intelligence&hl=en&gl=US&ceid=US:en"),
-    ("Google News OpenAI", "https://news.google.com/rss/search?q=OpenAI+Anthropic+Gemini&hl=en&gl=US&ceid=US:en"),
-    # AI cégek blogjai
-    ("OpenAI Blog", "https://openai.com/blog/rss/"),
-    ("Anthropic News", "https://www.anthropic.com/rss.xml"),
-    ("Google AI Blog", "https://blog.google/technology/ai/rss/"),
-    # Reddit-alternatívák (közösségi AI tartalom)
-    ("Lobste.rs AI", "https://lobste.rs/t/ai.rss"),
-    ("AlphaSignal AI", "https://alphasignal.ai/rss"),
-    ("AI News Newsletter", "https://buttondown.com/ainews/rss"),
-    ("Hacker News AI", "https://hnrss.org/newest?q=AI+artificial+intelligence&count=20"),
-    # Hacker News
-    ("Hacker News", "https://news.ycombinator.com/rss"),
+    ("TechCrunch AI", "https://techcrunch.com/category/artificial-intelligence/feed/"),
+    # Google News - cégenként külön (legtöbb forrást hozza)
+    ("Google News AI", "https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en"),
+    ("Google News OpenAI", "https://news.google.com/rss/search?q=OpenAI+ChatGPT&hl=en&gl=US&ceid=US:en"),
+    ("Google News Anthropic", "https://news.google.com/rss/search?q=Anthropic+Claude&hl=en&gl=US&ceid=US:en"),
+    ("Google News Google AI", "https://news.google.com/rss/search?q=Google+Gemini+DeepMind&hl=en&gl=US&ceid=US:en"),
+    ("Google News Meta AI", "https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en"),
+    ("Google News Magyar AI", "https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu"),
+    # Közösségi
+    ("Hacker News AI", "https://hnrss.org/newest?q=AI+LLM+GPT&count=15"),
 ]
 
 rss_headlines = []

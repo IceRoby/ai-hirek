@@ -6,7 +6,6 @@ import re
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 today = datetime.date.today().strftime("%Y. %m. %d.")
-now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %m. %d. %H:%M:%S (Budapest)")
 
 response = client.messages.create(
     model="claude-haiku-4-5-20251001",
@@ -29,7 +28,7 @@ Végezz pontosan 8 keresést az alábbi témákban, majd gyűjts össze 40-60 fr
 Fontos források: TechCrunch, The Verge, Reuters, Bloomberg, Wired, Ars Technica, VentureBeat, openai.com/blog, anthropic.com/news, index.hu, hvg.hu
 
 A válaszod KIZÁRÓLAG egy JSON objektum legyen, semmi más, így:
-{{"date":"{today}","summary":"összefoglaló magyarul","news":[{{"title":"cím magyarul","summary":"összefoglaló magyarul","source":"forrás neve","url":"https://...","category":"Nagy cégek"}}]}}
+{{"date":"{today}","summary":"összefoglaló magyarul","news":[{{"title":"cím magyarul","summary":"4-6 mondatos részletes összefoglaló magyarul a legfontosabb tényekkel és nevekkel","source":"forrás neve","url":"https://...","category":"Nagy cégek"}}]}}
 
 Kategóriák csak ezek lehetnek: Magyar, Nagy cégek, Startupok, Szabályozás, Tudomány, Alkalmazások, Biztonság
 NE használj markdown-t, NE írj semmit a JSON elé vagy után!"""
@@ -102,7 +101,7 @@ for item in news_json.get("news", []):
         <span class="category-badge" style="color:{color};border-color:{color}20;background:{color}10">{icon} {cat}</span>
         <h2 class="card-title">{item.get('title','')}</h2>
         <p class="card-summary">{item.get('summary','')}</p>
-        <a href="{item.get('url','#')}" class="card-link" target="_blank" rel="noopener">
+        <a href="{item.get('url','#')}" class="card-link" target="_blank" rel="noopener nofollow">
           <span>{item.get('source','Forrás')}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>
@@ -122,7 +121,7 @@ html = f"""<!DOCTYPE html>
 <style>
   :root {{
     --bg:#0a0a0f; --surface:#13131a; --border:#1e1e2e;
-    --text:#f0f0fa; --muted:#a0a0c0; --accent:#c8ff00;
+    --text:#f0f0fa; --muted:#c8c8e0; --accent:#c8ff00;
   }}
   *{{box-sizing:border-box;margin:0;padding:0}}
   body{{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}}
@@ -145,8 +144,8 @@ html = f"""<!DOCTYPE html>
   .card-accent{{width:4px;flex-shrink:0;opacity:.8}}
   .card-body{{padding:20px 24px;flex:1}}
   .category-badge{{display:inline-block;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:1px solid;margin-bottom:10px}}
-  .card-title{{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.3;margin-bottom:10px;color:var(--text)}}
-  .card-summary{{font-size:.88rem;line-height:1.65;color:var(--muted);margin-bottom:16px}}
+  .card-title{{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.35;margin-bottom:12px;color:var(--text)}}
+  .card-summary{{font-size:.95rem;line-height:1.75;color:var(--muted);margin-bottom:16px}}
   .card-link{{display:inline-flex;align-items:center;gap:6px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.05em;color:var(--accent);text-decoration:none;opacity:.8;transition:opacity .2s}}
   .card-link:hover{{opacity:1}}
   footer{{margin-top:64px;padding:32px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:.8rem}}
@@ -177,7 +176,7 @@ html = f"""<!DOCTYPE html>
   </div>
   <p class="news-count">Megjelenített hírek: <span id="count">{total}</span> / {total}</p>
   <div class="news-grid" id="grid">{news_items_html}</div>
-  <footer>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong> · Minden reggel 6:00-kor frissül</footer>
+  <footer>Generálva <strong>Claude AI</strong> által · {news_json['date']} · Minden reggel 6:00-kor frissül</footer>
 </div>
 <script>
 function filter(btn,cat){{

@@ -69,7 +69,7 @@ print(f"\nÖsszes RSS cím: {len(rss_headlines)}")
 # --- CLAUDE API HÍVÁS ---
 response = client.messages.create(
     model="claude-haiku-4-5-20251001",
-    max_tokens=8000,
+    max_tokens=16000,
     tools=[{"type": "web_search_20250305", "name": "web_search"}],
     messages=[{
         "role": "user",
@@ -90,10 +90,10 @@ Végezz még 5 webes keresést:
 
 Keresendő oldalak: axios.com, blog.google, futurism.com, theguardian.com, businessinsider.com, wsj.com, anthropic.com/news, openai.com/blog, x.ai/news, techcrunch.com, theverge.com
 
-Gyűjts 30-50 egyedi hírt. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
+Gyűjts 15-20 egyedi hírt. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
 
 Válaszolj KIZÁRÓLAG valid JSON-nal:
-{{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"4-6 mondatos részletes kifejtés: számok, nevek, összefüggések","relevance":"1-2 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}
+{{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"2-3 mondatos kifejtés: legfontosabb számok, nevek","relevance":"1-2 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}
 
 Kategóriák: Magyar, Nagy cégek, Startupok, Szabályozás, Tudomány, Alkalmazások, Biztonság
 CSAK JSON-t írj, semmit előtte vagy utána!"""

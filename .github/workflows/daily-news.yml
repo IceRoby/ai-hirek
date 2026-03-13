@@ -1,62 +1,133 @@
+# ================================================================
+# AI HÍREK - GITHUB ACTIONS WORKFLOW (daily-news.yml)
+# ================================================================
+#
+# Ez a fájl szabályozza MIKOR és HOGYAN fut le automatikusan
+# a hírgyűjtő script.
+#
+# HOGYAN MÓDOSÍTSD AZ ÜTEMEZÉST:
+#   1. Keresd meg az aktív "schedule:" blokkot (nincs # előtte)
+#   2. Tedd # karaktert az elejére (kikapcsolod)
+#   3. Keresd meg a kívánt opciót
+#   4. Töröld a # karaktert az elejéről (bekapcsolod)
+#   5. Mentsd el (Commit changes)
+#
+# FONTOS - IDŐZÓNA:
+#   GitHub Actions UTC időzónában fut, nem Budapest időben!
+#   Budapest télen = UTC+1  → reggel 6:00 = 05:00 UTC
+#   Budapest nyáron = UTC+2 → reggel 6:00 = 04:00 UTC
+#   (Március végétől október végéig nyári idő = 04:00 UTC kell)
+#
+# CRON SZINTAXIS MAGYARÁZAT:
+#   '    perc    óra    nap    hónap    hétnap    '
+#    ┌────┘       │      │       │         │
+#    │       ┌───┘      │       │         │
+#    │       │      ┌───┘       │         │
+#    │       │      │       ┌───┘         │
+#    │       │      │       │       ┌─────┘
+#    │       │      │       │       │
+#    0       5      *       *       1
+#  (0 perc) (5 UTC = 6:00 Budapest télen) (minden nap) (minden hónap) (hétfő)
+#
+#   *    = minden (pl. minden nap, minden hónap)
+#   */2  = minden 2. (pl. minden 2. nap)
+#   1-5  = 1-től 5-ig (pl. hétfőtől péntekig)
+#   Hétnap: 0=vasárnap, 1=hétfő, 2=kedd, 3=szerda, 4=csütörtök, 5=péntek, 6=szombat
+# ================================================================
+
 name: Reggeli AI Hírek
 
 on:
+  # --------------------------------------------------------------
+  # ÜTEMEZÉS BEÁLLÍTÁSA
+  # Csak EGY schedule blokkot hagyj aktívan (a többi legyen #)!
+  # --------------------------------------------------------------
+
+  # HETENTE EGYSZER - minden hétfőn reggel 6:00 (Budapest téli idő)
+  # Ez az AKTÍV beállítás!
   schedule:
     - cron: '0 5 * * 1'
 
-  # --- NAPONTA EGYSZER ---
+  # NAPONTA EGYSZER - minden reggel 6:00 (Budapest téli idő)
+  # Aktiváláshoz: töröld a # karaktert az alábbi 2 sorról
+  # ÉS tedd # karaktert a fenti "schedule:" és "- cron:" sorokra
   #schedule:
   #  - cron: '0 5 * * *'
 
-  # --- NAPONTA KÉTSZER ---
+  # NAPONTA KÉTSZER - reggel 6:00 és este 18:00
   #schedule:
   #  - cron: '0 5 * * *'
   #  - cron: '0 17 * * *'
 
-  # --- CSAK HÉTKÖZNAPOKON ---
+  # CSAK HÉTKÖZNAPOKON - hétfőtől péntekig reggel 6:00
   #schedule:
   #  - cron: '0 5 * * 1-5'
 
-  # --- KÉTNAPONTA ---
+  # KÉTNAPONTA - minden páros napon reggel 6:00
   #schedule:
   #  - cron: '0 5 */2 * *'
 
-  # --- ÓRÁNKÉNT ---
-  #schedule:
-  #  - cron: '0 * * * *'
-
-  # --- MINDEN 6 ÓRÁBAN ---
+  # MINDEN 6 ÓRÁBAN - 0:00, 6:00, 12:00, 18:00
   #schedule:
   #  - cron: '0 */6 * * *'
 
+  # ÓRÁNKÉNT - minden óra elején
+  #schedule:
+  #  - cron: '0 * * * *'
+
+  # CSAK MANUÁLISAN - töröld ki a fenti összes schedule blokkot
+  # és csak a workflow_dispatch marad aktív
+
+  # --------------------------------------------------------------
+  # MANUÁLIS INDÍTÁS
+  # Ezt MINDIG hagyd aktívan! Ez teszi lehetővé hogy az Actions
+  # fülön a "Run workflow" gombbal bármikor elindítsd kézzel.
+  # --------------------------------------------------------------
   workflow_dispatch:
 
+# ================================================================
+# A FUTÁSI LÉPÉSEK - általában nem kell módosítani
+# ================================================================
 jobs:
   generate-news:
+    # GitHub által biztosított ingyenes Linux szerver
     runs-on: ubuntu-latest
+
+    # Engedélyek: a script commitálhat és pusholhat a repóba
     permissions:
       contents: write
 
     steps:
+      # 1. lépés: Letölti a repó tartalmát a szerverre
       - name: Kód letöltése
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: main
+          fetch-depth: 0  # Teljes git history kell a rebase-hez
+          ref: main       # A main ágat tölti le
 
+      # 2. lépés: Python 3.11 telepítése a szerverre
       - name: Python beállítása
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
+      # 3. lépés: Az Anthropic Python könyvtár telepítése
+      # (ez kell a Claude API híváshoz)
       - name: Függőségek telepítése
         run: pip install anthropic
 
+      # 4. lépés: A hírgyűjtő script futtatása
+      # Az ANTHROPIC_API_KEY a GitHub Secrets-ből jön
+      # (Settings → Secrets → ANTHROPIC_API_KEY)
       - name: Hírek összegyűjtése és oldal generálása
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python fetch_news.py
 
+      # 5. lépés: A generált fájlok visszatöltése a repóba
+      # git add -A = minden változtatott fájlt hozzáad
+      # git diff --staged --quiet = ha nincs változás, kilép (nem commitál feleslegesen)
+      # git fetch + rebase = biztonságos push, elkerüli a konfliktusokat
       - name: Változások commitolása és feltöltése
         run: |
           git config --local user.email "action@github.com"

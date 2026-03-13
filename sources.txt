@@ -25,6 +25,21 @@ rss | Google News Google AI | https://news.google.com/rss/search?q=Google+Gemini
 rss | Google News Meta AI | https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en
 rss | Google News Magyar AI | https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu
 rss | Hacker News AI | https://hnrss.org/newest?q=AI+LLM+GPT&count=15
+rss | MIT Technology Review AI | https://www.technologyreview.com/topic/artificial-intelligence/feed
+rss | The Guardian AI | https://www.theguardian.com/technology/artificialintelligenceai/rss
+rss | ScienceDaily AI | https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml
+rss | Wired AI | https://www.wired.com/feed/tag/ai/latest/rss
+rss | Financial Times AI | https://www.ft.com/technology?format=rss
+rss | New York Times AI | https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml
+rss | The Rundown AI | https://www.therundown.ai/rss
+rss | Unite.AI | https://www.unite.ai/feed
+rss | DailyAI | https://dailyai.com/feed
+rss | VentureBeat AI | https://venturebeat.com/category/ai/feed
+rss | Fast Company AI | https://www.fastcompany.com/technology/rss
+rss | GeekWire AI | https://www.geekwire.com/topic/artificial-intelligence/feed
+rss | OpenAI Blog | https://openai.com/blog/rss
+rss | Google DeepMind | https://deepmind.google/blog/rss.xml
+rss | AWS AI Blog | https://aws.amazon.com/blogs/machine-learning/feed
 
 # --- DOMAINEK (webes kereséshez) ---
 domain | Axios | axios.com

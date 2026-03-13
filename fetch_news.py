@@ -10,45 +10,60 @@ client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 today = datetime.date.today().strftime("%Y. %m. %d.")
 now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %m. %d. %H:%M:%S (Budapest)")
 
-# --- RSS FEED GYŰJTÉS ---
-RSS_FEEDS = [
-    # Biztosan működő tech portálok
-    ("The Verge AI", "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"),
-    ("TechCrunch AI", "https://techcrunch.com/category/artificial-intelligence/feed/"),
-    # Google News - cégenként külön (legtöbb forrást hozza)
-    ("Google News AI", "https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en"),
-    ("Google News OpenAI", "https://news.google.com/rss/search?q=OpenAI+ChatGPT&hl=en&gl=US&ceid=US:en"),
-    ("Google News Anthropic", "https://news.google.com/rss/search?q=Anthropic+Claude&hl=en&gl=US&ceid=US:en"),
-    ("Google News Google AI", "https://news.google.com/rss/search?q=Google+Gemini+DeepMind&hl=en&gl=US&ceid=US:en"),
-    ("Google News Meta AI", "https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en"),
-    ("Google News Magyar AI", "https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu"),
-    # Közösségi
-    ("Hacker News AI", "https://hnrss.org/newest?q=AI+LLM+GPT&count=15"),
-]
+# --- SOURCES.TXT BEOLVASÁSA ---
+rss_feeds = []
+domains = []
+stats = []
 
+try:
+    with open("sources.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) != 3:
+                continue
+            typ, name, value = parts
+            if typ == "rss":
+                rss_feeds.append((name, value))
+            elif typ in ("domain", "url"):
+                domains.append((name, value))
+    print(f"sources.txt: {len(rss_feeds)} RSS feed, {len(domains)} domain betöltve")
+except Exception as e:
+    print(f"sources.txt hiba: {e} - alapértelmezett feedek használata")
+    rss_feeds = [
+        ("The Verge AI", "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"),
+        ("TechCrunch AI", "https://techcrunch.com/category/artificial-intelligence/feed/"),
+        ("Google News AI", "https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en"),
+    ]
+
+# --- RSS GYŰJTÉS ---
 rss_headlines = []
-for name, url in RSS_FEEDS:
+for name, url in rss_feeds:
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=8) as resp:
             tree = ET.parse(resp)
             root = tree.getroot()
-            ns = ""
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
             count = 0
             for item in items[:8]:
                 title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
                 link_el = item.find("link") or item.find("{http://www.w3.org/2005/Atom}link")
                 title = title_el.text.strip() if title_el is not None and title_el.text else ""
-                link = link_el.text.strip() if link_el is not None and link_el.text else (link_el.get("href","") if link_el is not None else "")
+                link = link_el.text.strip() if link_el is not None and link_el.text else (link_el.get("href", "") if link_el is not None else "")
                 if title and link:
                     rss_headlines.append(f"- {title} | {link} [{name}]")
                     count += 1
         print(f"RSS OK: {name} ({count} cikk)")
+        stats.append(f"rss | {name} | OK | {count} cikk")
     except Exception as e:
         print(f"RSS hiba: {name} - {e}")
+        stats.append(f"rss | {name} | HIBA | {str(e)[:60]}")
 
-rss_context = "\n".join(rss_headlines[:100])
+rss_context = "\n".join(rss_headlines[:80])
+domain_list = ", ".join([v for _, v in domains])
 print(f"\nÖsszes RSS cím: {len(rss_headlines)}")
 
 # --- CLAUDE API HÍVÁS ---
@@ -62,23 +77,22 @@ response = client.messages.create(
 
 Te egy AI hírigazgató vagy. Feladatod: friss AI híreket keresni és azokról SAJÁT SZAVAKKAL magyar összefoglalókat írni.
 
-Az alábbi friss címek RSS feedekből érkeztek – ezeket használd kiindulópontként:
-
+Friss RSS címek kiindulópontként:
 {rss_context}
 
-Végezz még 5 webes keresést:
+Végezz 5 webes keresést:
 1. AI news today {today}
-2. OpenAI Anthropic Google AI news
-3. AI startup new model released
-4. EU AI regulation news
-5. magyar mesterséges intelligencia hírek
+2. OpenAI Anthropic Claude news
+3. Google Gemini DeepMind news
+4. AI startup new model released
+5. magyar mesterseges intelligencia hirek
 
-Keresendő oldalak: axios.com, blog.google, futurism.com, theguardian.com, businessinsider.com, wsj.com, anthropic.com/news, openai.com/blog, x.ai/news, techcrunch.com, theverge.com
+Extra keresendő oldalak: {domain_list}
 
 Gyűjts 15-20 egyedi hírt. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
 
-Válaszolj KIZÁRÓLAG valid JSON-nal:
-{{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"2-3 mondatos kifejtés: legfontosabb számok, nevek","relevance":"1-2 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}
+Válaszolj KIZÁRÓLAG valid JSON-nal, semmi mással:
+{{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"2-3 mondatos kifejtés: számok, nevek, összefüggések","relevance":"1 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}
 
 Kategóriák: Magyar, Nagy cégek, Startupok, Szabályozás, Tudomány, Alkalmazások, Biztonság
 CSAK JSON-t írj, semmit előtte vagy utána!"""
@@ -90,10 +104,10 @@ print("=== RESPONSE BLOCKS ===")
 for i, block in enumerate(response.content):
     print(f"Block {i}: type={block.type}")
     if block.type == "text":
-        print(f"TEXT PREVIEW: {repr(block.text[:600])}")
+        print(f"TEXT PREVIEW: {repr(block.text[:400])}")
 print("=== END ===")
 
-# Robust JSON extraction
+# JSON extraction
 news_json = None
 for block in response.content:
     if block.type == "text":
@@ -118,11 +132,52 @@ for block in response.content:
 
 if not news_json:
     print("FALLBACK")
-    news_json = {
-        "date": today,
-        "summary": "A hírek betöltése során hiba történt.",
-        "news": []
-    }
+    news_json = {"date": today, "summary": "A hírek betöltése során hiba történt.", "news": []}
+
+# --- STATISZTIKA VISSZAÍRÁSA sources.txt-be (7 napos előzmény) ---
+try:
+    with open("sources.txt", "r", encoding="utf-8") as f:
+        src_content = f.read()
+
+    # Szétválasztjuk a config és a statisztika részt
+    if "# [STATISZTIKA_HISTORIA]" in src_content:
+        config_part = src_content[:src_content.index("# [STATISZTIKA_HISTORIA]")].rstrip()
+        historia_part = src_content[src_content.index("# [STATISZTIKA_HISTORIA]"):]
+    else:
+        config_part = src_content.rstrip()
+        historia_part = ""
+
+    # Meglévő napi bejegyzések kinyerése
+    entries = re.findall(r'# --- FUTÁS: .+?(?=# --- FUTÁS:|$)', historia_part, re.DOTALL | re.MULTILINE)
+
+    # Csak az utolsó 6 tartjuk meg (+ az új = 7 nap)
+    entries = entries[-6:] if len(entries) >= 6 else entries
+
+    # Új bejegyzés összeállítása
+    new_entry = f"# --- FUTÁS: {now} ---\n"
+    new_entry += f"# Hírek száma: {len(news_json.get('news', []))} | RSS címek: {len(rss_headlines)}\n"
+    for s in stats:
+        parts = s.split(" | ")
+        if len(parts) >= 4:
+            new_entry += f"#   {parts[1]:<35} {parts[2]:<6} {parts[3]}\n"
+        else:
+            new_entry += f"#   {s}\n"
+    new_entry += "#\n"
+
+    entries.append(new_entry)
+
+    # Összerakjuk a végeredményt
+    historia_block = "\n\n# [STATISZTIKA_HISTORIA - utolsó 7 nap, automatikusan frissül]\n"
+    historia_block += "# Formátum: Forrás neve | OK/HIBA | cikk száma\n"
+    historia_block += "#" + "-"*60 + "\n"
+    for e in entries:
+        historia_block += e
+
+    with open("sources.txt", "w", encoding="utf-8") as f:
+        f.write(config_part + historia_block)
+    print("Statisztika visszaírva sources.txt-be")
+except Exception as e:
+    print(f"Statisztika írási hiba: {e}")
 
 # Category styles
 cat_style = {
@@ -169,10 +224,7 @@ html = f"""<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  :root {{
-    --bg:#0a0a0f; --surface:#13131a; --border:#1e1e2e;
-    --text:#f0f0fa; --muted:#c8c8e0; --accent:#c8ff00;
-  }}
+  :root {{--bg:#0a0a0f;--surface:#13131a;--border:#1e1e2e;--text:#f0f0fa;--muted:#c8c8e0;--accent:#c8ff00}}
   *{{box-sizing:border-box;margin:0;padding:0}}
   body{{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}}
   body::before{{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(200,255,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}}
@@ -203,14 +255,14 @@ html = f"""<!DOCTYPE html>
   .card-link{{display:inline-flex;align-items:center;gap:6px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.05em;color:var(--accent);text-decoration:none;opacity:.8;transition:opacity .2s}}
   .card-link:hover{{opacity:1}}
   footer{{margin-top:64px;padding:32px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:.8rem}}
+  footer p{{margin-bottom:10px}}
   footer strong{{color:var(--accent)}}
+  .legal{{margin-top:20px;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:.75rem;line-height:1.6;color:#888;text-align:left;max-width:800px;margin-left:auto;margin-right:auto}}
+  .legal strong{{color:#aaa}}
   @keyframes fadeDown{{from{{opacity:0;transform:translateY(-20px)}}to{{opacity:1;transform:translateY(0)}}}}
   @keyframes fadeUp{{from{{opacity:0;transform:translateY(16px)}}to{{opacity:1;transform:translateY(0)}}}}
   @keyframes pulse{{0%,100%{{opacity:1;transform:scale(1)}}50%{{opacity:.5;transform:scale(.7)}}}}
   .hidden{{display:none}}
-  footer p{{margin-bottom:10px}}
-  .legal{{margin-top:20px;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:.75rem;line-height:1.6;color:#888;text-align:left;max-width:800px;margin-left:auto;margin-right:auto}}
-  .legal strong{{color:#aaa}}
 </style>
 </head>
 <body>

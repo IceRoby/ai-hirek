@@ -1,0 +1,49 @@
+# AI HÍREK FORRÁSAI - Konfigurációs fájl
+# ==========================================
+# HOGYAN ADJAK HOZZÁ ÚJ FORRÁST:
+#
+# RSS feed hozzáadása:
+#   rss | Forrás neve | https://teljes-rss-url.com/feed
+#
+# Domain hozzáadása (Claude webes kereséshez használja):
+#   domain | Forrás neve | example.com
+#
+# Konkrét URL hozzáadása (Claude webes kereséshez):
+#   url | Forrás neve | https://example.com/blog
+#
+# Megjegyzés: # karakterrel kezdődő sorok figyelmen kívül maradnak
+# Utolsó futás eredményét ld. lent a [STATISZTIKA] szekcióban
+# ==========================================
+
+# --- RSS FEEDEK ---
+rss | The Verge AI | https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
+rss | TechCrunch AI | https://techcrunch.com/category/artificial-intelligence/feed/
+rss | Google News AI | https://news.google.com/rss/search?q=artificial+intelligence+news&hl=en&gl=US&ceid=US:en
+rss | Google News OpenAI | https://news.google.com/rss/search?q=OpenAI+ChatGPT&hl=en&gl=US&ceid=US:en
+rss | Google News Anthropic | https://news.google.com/rss/search?q=Anthropic+Claude&hl=en&gl=US&ceid=US:en
+rss | Google News Google AI | https://news.google.com/rss/search?q=Google+Gemini+DeepMind&hl=en&gl=US&ceid=US:en
+rss | Google News Meta AI | https://news.google.com/rss/search?q=Meta+AI+Llama&hl=en&gl=US&ceid=US:en
+rss | Google News Magyar AI | https://news.google.com/rss/search?q=mesterseges+intelligencia&hl=hu&gl=HU&ceid=HU:hu
+rss | Hacker News AI | https://hnrss.org/newest?q=AI+LLM+GPT&count=15
+
+# --- DOMAINEK (webes kereséshez) ---
+domain | Axios | axios.com
+domain | The Guardian AI | theguardian.com
+domain | Bloomberg Tech | bloomberg.com
+domain | Reuters Tech | reuters.com
+domain | Wired AI | wired.com
+domain | Ars Technica | arstechnica.com
+domain | VentureBeat AI | venturebeat.com
+domain | Business Insider | businessinsider.com
+domain | Wall Street Journal | wsj.com
+domain | Time Magazine AI | time.com
+domain | Futurism | futurism.com
+domain | MIT Tech Review | technologyreview.com
+domain | OpenAI Blog | openai.com
+domain | Anthropic News | anthropic.com
+domain | Google AI Blog | blog.google
+domain | xAI News | x.ai
+domain | Runway ML | runwayml.com
+domain | ITE.hu Magyar AI | klub.ite.hu
+
+# [STATISZTIKA - automatikusan frissül minden futáskor]

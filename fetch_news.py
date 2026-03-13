@@ -3,10 +3,53 @@ import json
 import datetime
 import os
 import re
+import urllib.request
+import xml.etree.ElementTree as ET
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 today = datetime.date.today().strftime("%Y. %m. %d.")
+now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %m. %d. %H:%M:%S (Budapest)")
 
+# --- RSS FEED GYŰJTÉS ---
+RSS_FEEDS = [
+    ("TechCrunch AI", "https://techcrunch.com/category/artificial-intelligence/feed/"),
+    ("The Verge AI", "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"),
+    ("Ars Technica AI", "https://feeds.arstechnica.com/arstechnica/technology-lab"),
+    ("VentureBeat AI", "https://venturebeat.com/category/ai/feed/"),
+    ("Wired AI", "https://www.wired.com/feed/tag/ai/latest/rss"),
+    ("MIT Tech Review AI", "https://www.technologyreview.com/feed/"),
+    ("Import AI", "https://importai.substack.com/feed"),
+    ("The Batch", "https://www.deeplearning.ai/the-batch/feed/"),
+    ("Futurism AI", "https://futurism.com/artificial-intelligence/rss"),
+    ("Reuters Tech", "https://feeds.reuters.com/reuters/technologyNews"),
+]
+
+rss_headlines = []
+for name, url in RSS_FEEDS:
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            tree = ET.parse(resp)
+            root = tree.getroot()
+            ns = ""
+            items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
+            count = 0
+            for item in items[:5]:
+                title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
+                link_el = item.find("link") or item.find("{http://www.w3.org/2005/Atom}link")
+                title = title_el.text.strip() if title_el is not None and title_el.text else ""
+                link = link_el.text.strip() if link_el is not None and link_el.text else (link_el.get("href","") if link_el is not None else "")
+                if title and link:
+                    rss_headlines.append(f"- {title} | {link} [{name}]")
+                    count += 1
+        print(f"RSS OK: {name} ({count} cikk)")
+    except Exception as e:
+        print(f"RSS hiba: {name} - {e}")
+
+rss_context = "\n".join(rss_headlines[:60])
+print(f"\nÖsszes RSS cím: {len(rss_headlines)}")
+
+# --- CLAUDE API HÍVÁS ---
 response = client.messages.create(
     model="claude-haiku-4-5-20251001",
     max_tokens=8000,
@@ -15,27 +58,30 @@ response = client.messages.create(
         "role": "user",
         "content": f"""Mai dátum: {today}
 
-Végezz pontosan 8 keresést az alábbi témákban, majd gyűjts össze 40-60 friss AI hírt az elmúlt 48 órából:
-1. AI news today
-2. OpenAI Google Anthropic Meta AI news
-3. Microsoft Apple Amazon NVIDIA AI news
-4. AI startup funding new model released
-5. EU AI regulation policy government
-6. AI research science medical breakthrough
-7. AI robotics applications business
-8. magyar mesterséges intelligencia
+Az alábbi friss AI híreket gyűjtöttem RSS feedekből – ezeket használd kiindulópontként, és egészítsd ki webes kereséssel:
 
-Fontos források: TechCrunch, The Verge, Reuters, Bloomberg, Wired, Ars Technica, VentureBeat, openai.com/blog, anthropic.com/news, index.hu, hvg.hu
+{rss_context}
 
-A válaszod KIZÁRÓLAG egy JSON objektum legyen, semmi más, így:
-{{"date":"{today}","summary":"összefoglaló magyarul","news":[{{"title":"cím magyarul","summary":"4-6 mondatos részletes összefoglaló magyarul a legfontosabb tényekkel és nevekkel","source":"forrás neve","url":"https://...","category":"Nagy cégek"}}]}}
+Végezz még 5 célzott keresést:
+1. AI news today {today}
+2. OpenAI Anthropic Google AI news this week
+3. AI startup funding new model
+4. EU AI regulation policy
+5. magyar mesterséges intelligencia hírek
 
-Kategóriák csak ezek lehetnek: Magyar, Nagy cégek, Startupok, Szabályozás, Tudomány, Alkalmazások, Biztonság
-NE használj markdown-t, NE írj semmit a JSON elé vagy után!"""
+Fontos extra források: axios.com, blog.google, futurism.com, theguardian.com, businessinsider.com, wsj.com, time.com, x.ai/news, runwayml.com, anthropic.com/news, openai.com/blog, klub.ite.hu
+
+Gyűjts össze 30-50 EGYEDI hírt. Minden hírhez írj RÉSZLETES összefoglalót az alábbi struktúrában.
+
+Adj vissza KIZÁRÓLAG valid JSON-t, semmi mást:
+{{"date":"{today}","summary":"3-4 mondatos összefoglaló magyarul a mai legfontosabb AI hírekről","news":[{{"title":"Hír címe magyarul","summary":"2-3 mondatos rövid összefoglaló magyarul – mi történt pontosan","details":"4-6 mondatos részletes kifejtés magyarul: konkrét számok, nevek, összefüggések, technikai részletek","relevance":"1-2 mondat magyarul: miért érdekes ez egy hétköznapi olvasónak, mi változik az életében","source":"Forrás neve","url":"https://...","category":"Nagy cégek"}}]}}
+
+Kategóriák: Magyar, Nagy cégek, Startupok, Szabályozás, Tudomány, Alkalmazások, Biztonság
+Csak JSON-t adj vissza, markdown kód blokkot se használj!"""
     }]
 )
 
-# Debug output
+# Debug
 print("=== RESPONSE BLOCKS ===")
 for i, block in enumerate(response.content):
     print(f"Block {i}: type={block.type}")
@@ -48,30 +94,26 @@ news_json = None
 for block in response.content:
     if block.type == "text":
         text = block.text.strip()
-        # Strip markdown fences
         text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
         text = text.strip()
-        # Try direct parse
         try:
             news_json = json.loads(text)
-            print(f"OK: {len(news_json.get('news', []))} hir")
+            print(f"OK direct: {len(news_json.get('news', []))} hír")
             break
         except Exception as e:
             print(f"Direct parse failed: {e}")
-        # Try regex extraction
         m = re.search(r'\{[\s\S]*"news"\s*:\s*\[[\s\S]*?\]\s*\}', text)
         if m:
             try:
                 news_json = json.loads(m.group())
-                print(f"OK regex: {len(news_json.get('news', []))} hir")
+                print(f"OK regex: {len(news_json.get('news', []))} hír")
                 break
             except Exception as e:
-                print(f"Regex parse failed: {e}")
-                print(f"Snippet: {m.group()[:400]}")
+                print(f"Regex failed: {e}")
 
 if not news_json:
-    print("FALLBACK: JSON not found")
+    print("FALLBACK")
     news_json = {
         "date": today,
         "summary": "A hírek betöltése során hiba történt.",
@@ -94,6 +136,8 @@ news_items_html = ""
 for item in news_json.get("news", []):
     cat = item.get("category", "Nagy cégek")
     icon, color = cat_style.get(cat, ("📰", "#457b9d"))
+    details_html = f'<div class="card-details">{item.get("details","")}</div>' if item.get("details") else ""
+    relevance_html = f'<div class="card-relevance"><span class="relevance-label">💡 Miért érdekes?</span> {item.get("relevance","")}</div>' if item.get("relevance") else ""
     news_items_html += f"""
     <article class="news-card" data-category="{cat}">
       <div class="card-accent" style="background:{color}"></div>
@@ -101,6 +145,8 @@ for item in news_json.get("news", []):
         <span class="category-badge" style="color:{color};border-color:{color}20;background:{color}10">{icon} {cat}</span>
         <h2 class="card-title">{item.get('title','')}</h2>
         <p class="card-summary">{item.get('summary','')}</p>
+        {details_html}
+        {relevance_html}
         <a href="{item.get('url','#')}" class="card-link" target="_blank" rel="noopener nofollow">
           <span>{item.get('source','Forrás')}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -126,26 +172,30 @@ html = f"""<!DOCTYPE html>
   *{{box-sizing:border-box;margin:0;padding:0}}
   body{{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}}
   body::before{{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(200,255,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}}
-  .container{{max-width:900px;margin:0 auto;padding:0 24px;position:relative;z-index:1}}
+  .container{{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}}
   header{{padding:60px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px;animation:fadeDown .6s ease both}}
   .header-tag{{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}}
   .header-tag::before{{content:'';display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease infinite}}
-  h1{{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:20px}}
+  h1{{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:8px}}
   h1 em{{font-style:normal;color:var(--accent)}}
-  .summary-box{{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:20px 24px;border-radius:0 8px 8px 0;color:#b8b8d8;line-height:1.7;font-size:.95rem;margin-top:24px}}
+  .timestamp{{color:var(--muted);font-size:.85rem;margin-top:6px}}
+  .summary-box{{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:20px 24px;border-radius:0 8px 8px 0;color:#d0d0e8;line-height:1.7;font-size:.95rem;margin-top:24px}}
   .filters{{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;animation:fadeUp .6s .2s ease both}}
   .filter-btn{{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:100px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .2s}}
   .filter-btn:hover,.filter-btn.active{{border-color:var(--accent);color:var(--accent);background:rgba(200,255,0,.05)}}
   .news-count{{font-family:'Syne',sans-serif;font-size:.8rem;color:var(--muted);margin-bottom:24px}}
   .news-count span{{color:var(--accent);font-weight:700}}
-  .news-grid{{display:grid;gap:16px}}
+  .news-grid{{display:grid;gap:20px}}
   .news-card{{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;transition:transform .2s,border-color .2s;animation:fadeUp .5s ease both}}
   .news-card:hover{{transform:translateY(-2px);border-color:#2e2e42}}
   .card-accent{{width:4px;flex-shrink:0;opacity:.8}}
-  .card-body{{padding:20px 24px;flex:1}}
-  .category-badge{{display:inline-block;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:1px solid;margin-bottom:10px}}
-  .card-title{{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.35;margin-bottom:12px;color:var(--text)}}
-  .card-summary{{font-size:.95rem;line-height:1.75;color:var(--muted);margin-bottom:16px}}
+  .card-body{{padding:22px 26px;flex:1}}
+  .category-badge{{display:inline-block;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:1px solid;margin-bottom:12px}}
+  .card-title{{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.35;margin-bottom:10px;color:var(--text)}}
+  .card-summary{{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:12px}}
+  .card-details{{font-size:.9rem;line-height:1.75;color:#b8b8d8;margin-bottom:12px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid rgba(200,255,0,0.2)}}
+  .card-relevance{{font-size:.85rem;line-height:1.6;color:#a0c8a0;margin-bottom:14px;padding:8px 12px;background:rgba(200,255,0,0.04);border-radius:6px}}
+  .relevance-label{{font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;margin-right:4px}}
   .card-link{{display:inline-flex;align-items:center;gap:6px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.05em;color:var(--accent);text-decoration:none;opacity:.8;transition:opacity .2s}}
   .card-link:hover{{opacity:1}}
   footer{{margin-top:64px;padding:32px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:.8rem}}
@@ -161,7 +211,7 @@ html = f"""<!DOCTYPE html>
   <header>
     <div class="header-tag">Automatikus napi összefoglaló</div>
     <h1>Reggeli<br><em>AI Hírek</em></h1>
-    <p style="color:var(--muted);font-size:.9rem;margin-top:8px">{news_json['date']}</p>
+    <p class="timestamp">Utoljára frissítve: <strong style="color:var(--accent)">{now}</strong></p>
     <div class="summary-box">{news_json['summary']}</div>
   </header>
   <div class="filters">
@@ -176,7 +226,7 @@ html = f"""<!DOCTYPE html>
   </div>
   <p class="news-count">Megjelenített hírek: <span id="count">{total}</span> / {total}</p>
   <div class="news-grid" id="grid">{news_items_html}</div>
-  <footer>Generálva <strong>Claude AI</strong> által · {news_json['date']} · Minden reggel 6:00-kor frissül</footer>
+  <footer>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong> · Minden reggel 6:00-kor frissül</footer>
 </div>
 <script>
 function filter(btn,cat){{

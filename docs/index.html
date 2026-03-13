@@ -11,13 +11,11 @@
     --bg: #0a0a0f;
     --surface: #13131a;
     --border: #1e1e2e;
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
+    --text: #f0f0fa;
+    --muted: #a0a0c0;
     --accent: #c8ff00;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -26,8 +24,6 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* Animated grid background */
   body::before {
     content: '';
     position: fixed;
@@ -39,218 +35,61 @@
     pointer-events: none;
     z-index: 0;
   }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 24px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Header */
-  header {
-    padding: 60px 0 40px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 48px;
-    animation: fadeDown 0.6s ease both;
-  }
-
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+  header { padding: 60px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 48px; animation: fadeDown 0.6s ease both; }
   .header-tag {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
   }
-
   .header-tag::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 2s ease infinite;
+    content: ''; display: inline-block; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%; animation: pulse 2s ease infinite;
   }
-
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    margin-bottom: 20px;
-  }
-
-  h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 20px; }
+  h1 em { font-style: normal; color: var(--accent); }
   .summary-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    padding: 20px 24px;
-    border-radius: 0 8px 8px 0;
-    color: var(--muted);
-    line-height: 1.7;
-    font-size: 0.95rem;
-    margin-top: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); padding: 20px 24px;
+    border-radius: 0 8px 8px 0; color: #b8b8d8; line-height: 1.7; font-size: 0.95rem; margin-top: 24px;
   }
-
-  /* Filter buttons */
-  .filters {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 36px;
-    animation: fadeUp 0.6s 0.2s ease both;
-  }
-
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px; animation: fadeUp 0.6s 0.2s ease both; }
   .filter-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 8px 18px;
-    border-radius: 100px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+    padding: 8px 18px; border-radius: 100px; font-family: 'Syne', sans-serif;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s;
   }
-
-  .filter-btn:hover, .filter-btn.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(200,255,0,0.05);
-  }
-
-  /* News grid */
-  .news-grid {
-    display: grid;
-    gap: 16px;
-  }
-
+  .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(200,255,0,0.05); }
+  .news-count { font-family: 'Syne', sans-serif; font-size: 0.8rem; color: var(--muted); margin-bottom: 20px; }
+  .news-count span { color: var(--accent); font-weight: 700; }
+  .news-grid { display: grid; gap: 16px; }
   .news-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    transition: transform 0.2s, border-color 0.2s;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; display: flex; transition: transform 0.2s, border-color 0.2s;
     animation: fadeUp 0.5s ease both;
   }
-
-  .news-card:hover {
-    transform: translateY(-2px);
-    border-color: #2e2e42;
-  }
-
-  .card-accent {
-    width: 4px;
-    flex-shrink: 0;
-    opacity: 0.8;
-  }
-
-  .card-body {
-    padding: 20px 24px;
-    flex: 1;
-  }
-
+  .news-card:hover { transform: translateY(-2px); border-color: #2e2e42; }
+  .card-accent { width: 4px; flex-shrink: 0; opacity: 0.8; }
+  .card-body { padding: 20px 24px; flex: 1; }
   .category-badge {
-    display: inline-block;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 100px;
-    border: 1px solid;
-    margin-bottom: 10px;
+    display: inline-block; font-family: 'Syne', sans-serif; font-size: 0.72rem;
+    font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px; border: 1px solid; margin-bottom: 10px;
   }
-
-  .card-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-
-  .card-summary {
-    font-size: 0.88rem;
-    line-height: 1.65;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-
+  .card-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; color: var(--text); }
+  .card-summary { font-size: 0.88rem; line-height: 1.65; color: var(--muted); margin-bottom: 16px; }
   .card-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: var(--accent);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 0.2s;
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'Syne', sans-serif;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; color: var(--accent);
+    text-decoration: none; opacity: 0.8; transition: opacity 0.2s;
   }
-
   .card-link:hover { opacity: 1; }
-
-  .card-link svg { opacity: 0.6; }
-
-  /* Footer */
-  footer {
-    margin-top: 64px;
-    padding: 32px 0;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.8rem;
-    animation: fadeUp 0.6s ease both;
-  }
-
+  footer { margin-top: 64px; padding: 32px 0; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 0.8rem; }
   footer strong { color: var(--accent); }
-
-  /* Animations */
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.7); }
-  }
-
-  .news-card:nth-child(1) { animation-delay: 0.05s; }
-  .news-card:nth-child(2) { animation-delay: 0.1s; }
-  .news-card:nth-child(3) { animation-delay: 0.15s; }
-  .news-card:nth-child(4) { animation-delay: 0.2s; }
-  .news-card:nth-child(5) { animation-delay: 0.25s; }
-  .news-card:nth-child(6) { animation-delay: 0.3s; }
-  .news-card:nth-child(7) { animation-delay: 0.35s; }
-  .news-card:nth-child(8) { animation-delay: 0.4s; }
-
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.7); } }
+  .news-card:nth-child(n) { animation-delay: calc(var(--i, 0) * 0.05s); }
   .hidden { display: none; }
 </style>
 </head>
@@ -260,139 +99,24 @@
     <div class="header-tag">Automatikus napi összefoglaló</div>
     <h1>Reggeli<br><em>AI Hírek</em></h1>
     <p style="color:var(--muted); font-size:0.9rem; margin-top:8px;">2026. 03. 13.</p>
-    <div class="summary-box">A héten a nemzetközi AI hírek középpontjában az Anthropic és a Pentagon közötti jogi vita áll, amelyben az OpenAI és Google alkalmazottak is kiálltak az Anthropic mellett. Magyarországon a GVH elnöke az AI versenyképességi szerepéről beszélt, miközben a vállalatok 46%-a már használ MI-megoldásokat. Az AI szabályozás területén fontos határidők közelednek az USA-ban és az EU-ban egyaránt.</div>
+    <div class="summary-box">A hírek betöltése során hiba történt. Kérjük, próbálja újra később.</div>
   </header>
 
   <div class="filters">
-    <button class="filter-btn active" onclick="filter('mind')">Összes</button>
-    <button class="filter-btn" onclick="filter('Magyar')">🇭🇺 Magyar</button>
-    <button class="filter-btn" onclick="filter('Nemzetközi')">🌍 Nemzetközi</button>
-    <button class="filter-btn" onclick="filter('Szabályozás')">⚖️ Szabályozás</button>
-    <button class="filter-btn" onclick="filter('Alkalmazások')">🚀 Alkalmazások</button>
+    <button class="filter-btn active" onclick="filter(this,'mind')">Összes</button>
+    <button class="filter-btn" onclick="filter(this,'Magyar')">🇭🇺 Magyar</button>
+    <button class="filter-btn" onclick="filter(this,'Nagy cégek')">🏢 Nagy cégek</button>
+    <button class="filter-btn" onclick="filter(this,'Startupok')">💡 Startupok</button>
+    <button class="filter-btn" onclick="filter(this,'Tudomány')">🔬 Tudomány</button>
+    <button class="filter-btn" onclick="filter(this,'Szabályozás')">⚖️ Szabályozás</button>
+    <button class="filter-btn" onclick="filter(this,'Alkalmazások')">🚀 Alkalmazások</button>
+    <button class="filter-btn" onclick="filter(this,'Biztonság')">🛡️ Biztonság</button>
   </div>
+
+  <p class="news-count">Megjelenített hírek: <span id="count">0</span> / 0</p>
 
   <div class="news-grid" id="grid">
     
-    <article class="news-card" data-category="Magyar">
-      <div class="card-accent" style="background:#e63946"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#e63946; border-color:#e6394620; background:#e6394610">🇭🇺 Magyar</span>
-        <h2 class="card-title">A GVH elnöke: a mesterséges intelligencia alapvető versenyképességi kérdés</h2>
-        <p class="card-summary">Rigó Csaba Balázs, a Gazdasági Versenyhivatal elnöke a Nemzeti Közszolgálati Egyetem konferenciáján kiemelte, hogy az AI hatékonyságnövelő képességeivel kitörési pont lehet a közepes fejlettségű országok számára. A magyar kormány 2025 szeptemberében fogadta el Magyarország Mesterséges Intelligencia Stratégiáját, decemberben pedig megalakult a Magyar Mesterséges Intelligencia Tanács.</p>
-        <a href="https://infostart.hu/belfold/2026/03/13/igy-tamadja-a-piaci-versenyt-a-mesterseges-intelligencia" class="card-link" target="_blank" rel="noopener">
-          <span>Infostart</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Magyar">
-      <div class="card-accent" style="background:#e63946"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#e63946; border-color:#e6394620; background:#e6394610">🇭🇺 Magyar</span>
-        <h2 class="card-title">A magyar vállalatok 46%-a használ MI-alapú megoldásokat</h2>
-        <p class="card-summary">A K&H nagyvállalati növekedési index adatai szerint 2025 végére minden második magyar vállalat életébe beépült a mesterséges intelligencia valamilyen formában. Ez jelentős növekedés a 2024-es adatokhoz képest, amikor még a cégek háromnegyede mellőzte az MI-t.</p>
-        <a href="https://www.kisalfold.hu/helyi-hirek/2026/03/mesterseges-intelligencia-egyre-tudatosabban" class="card-link" target="_blank" rel="noopener">
-          <span>Kisalföld</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Magyar">
-      <div class="card-accent" style="background:#e63946"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#e63946; border-color:#e6394620; background:#e6394610">🇭🇺 Magyar</span>
-        <h2 class="card-title">Budapest SmartFest: több mint 1800 AI-film érkezett a nemzetközi versenyre</h2>
-        <p class="card-summary">A Budapest SmartFest idén harmadik alkalommal rendezik meg, és több mint 100 országból érkeztek nevezések. A döntős filmeket március 26-27-én vetítik a Cinema City Mammutban. A fesztivál bemutatja, hogyan találkozik a technológia és az emberi kreativitás.</p>
-        <a href="https://hirek.prim.hu/cikk/2026/01/19/hatarok_nelkul_tobb_mint_1800_ai-film_erkezett_a_budapest_smartfestre" class="card-link" target="_blank" rel="noopener">
-          <span>Prim hírek</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Nemzetközi">
-      <div class="card-accent" style="background:#457b9d"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#457b9d; border-color:#457b9d20; background:#457b9d10">🌍 Nemzetközi</span>
-        <h2 class="card-title">OpenAI és Google alkalmazottak kiálltak az Anthropic mellett a Pentagon-perben</h2>
-        <p class="card-summary">Több mint 30 OpenAI és Google DeepMind alkalmazott, köztük Jeff Dean, a Google tudományos igazgatója, amicus brief-et nyújtott be az Anthropic támogatására. A Pentagon "ellátási lánc kockázatnak" minősítette az Anthropicot, miután a cég megtagadta, hogy technológiáját tömeges megfigyelésre vagy autonóm fegyverekre használják.</p>
-        <a href="https://techcrunch.com/2026/03/09/openai-and-google-employees-rush-to-anthropics-defense-in-dod-lawsuit/" class="card-link" target="_blank" rel="noopener">
-          <span>TechCrunch</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Nemzetközi">
-      <div class="card-accent" style="background:#457b9d"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#457b9d; border-color:#457b9d20; background:#457b9d10">🌍 Nemzetközi</span>
-        <h2 class="card-title">Az OpenAI kiadta a GPT-5.4-et, az eddigi legfejlettebb modelljét</h2>
-        <p class="card-summary">Március 5-én az OpenAI bemutatta a GPT-5.4-et, amely 1 millió token kontextusablakkal rendelkezik és képes menet közben tervezni válaszait. A modell fejlett kódolási és érvelési képességekkel rendelkezik, és képes hosszú távú, több alkalmazáson átívelő munkafolyamatok kezelésére.</p>
-        <a href="https://www.devflokers.com/blog/ai-breakthroughs-march-2026" class="card-link" target="_blank" rel="noopener">
-          <span>devFlokers</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Nemzetközi">
-      <div class="card-accent" style="background:#457b9d"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#457b9d; border-color:#457b9d20; background:#457b9d10">🌍 Nemzetközi</span>
-        <h2 class="card-title">NVIDIA bejelentései a GTC 2026 konferencián</h2>
-        <p class="card-summary">Jensen Huang, az NVIDIA vezérigazgatója a jövő héten tartja keynote beszédét, ahol várhatóan bemutatják a NemoClaw AI platformot és egy új inference chipet. A vállalat Rubin platformja tízszeres költségcsökkentést ígér és a vezető AI cégek már adoptálják.</p>
-        <a href="https://nationaltoday.com/us/ca/san-jose/news/2026/03/12/nvidia-ceo-jensen-huang-to-unveil-new-ai-innovations-at-gtc-2026-keynote/" class="card-link" target="_blank" rel="noopener">
-          <span>San Jose Today</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Alkalmazások">
-      <div class="card-accent" style="background:#7b2d8b"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#7b2d8b; border-color:#7b2d8b20; background:#7b2d8b10">🚀 Alkalmazások</span>
-        <h2 class="card-title">NASA Perseverance rover: az első AI-tervezett Mars-útja</h2>
-        <p class="card-summary">A NASA és az Anthropic együttműködésében a Perseverance rover sikeresen teljesítette az első, teljesen mesterséges intelligencia által tervezett útvonalat a Marson. A Claude AI modellek 456 métert terveztek meg a Jezero-kráterben, helyettesítve az emberi tervezőket.</p>
-        <a href="https://www.jpl.nasa.gov/news/nasas-perseverance-rover-completes-first-ai-planned-drive-on-mars/" class="card-link" target="_blank" rel="noopener">
-          <span>NASA JPL</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Szabályozás">
-      <div class="card-accent" style="background:#2d6a4f"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#2d6a4f; border-color:#2d6a4f20; background:#2d6a4f10">⚖️ Szabályozás</span>
-        <h2 class="card-title">Trump elnöki rendelete megkérdőjelezi az állami AI-törvényeket</h2>
-        <p class="card-summary">Trump elnök 2025 decemberében aláírt rendelete egységes szövetségi AI-keretrendszert hoz létre, és felhatalmazást ad az állami AI-törvények megtámadására. Kalifornia, Texas és Colorado AI-törvényei 2026 elején lépnek hatályba, de a szövetségi kormány felülbírálhatja őket.</p>
-        <a href="https://www.kslaw.com/news-and-insights/new-state-ai-laws-are-effective-on-january-1-2026-but-a-new-executive-order-signals-disruption" class="card-link" target="_blank" rel="noopener">
-          <span>King & Spalding</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Szabályozás">
-      <div class="card-accent" style="background:#2d6a4f"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#2d6a4f; border-color:#2d6a4f20; background:#2d6a4f10">⚖️ Szabályozás</span>
-        <h2 class="card-title">Florida törvényhozók vitáznak az AI szabályozásról és a gyermekvédelemről</h2>
-        <p class="card-summary">Florida szenátusa 35-2 arányban megszavazta az "AI Bill of Rights" törvényjavaslatot, amely megtiltaná az AI társalgó chatbotoknak, hogy szülői beleegyezés nélkül kapcsolatba lépjenek gyermekekkel. Ron DeSantis kormányzó hangsúlyozta a gyermekvédelem fontosságát az AI-korban.</p>
-        <a href="https://www.floridabar.org/the-florida-bar-news/florida-lawmakers-split-on-ai-regulation/" class="card-link" target="_blank" rel="noopener">
-          <span>The Florida Bar</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
-    <article class="news-card" data-category="Szabályozás">
-      <div class="card-accent" style="background:#2d6a4f"></div>
-      <div class="card-body">
-        <span class="category-badge" style="color:#2d6a4f; border-color:#2d6a4f20; background:#2d6a4f10">⚖️ Szabályozás</span>
-        <h2 class="card-title">Kutatás: az AI chatbotok veszélyesek lehetnek pszichológiai tanácsadásban</h2>
-        <p class="card-summary">A Brown University kutatói megállapították, hogy a ChatGPT és más AI chatbotok gyakran megsértik a pszichológiai ellátás alapvető etikai szabályait. A kutatók hangsúlyozzák, hogy világos szabályozásra van szükség az AI mentális egészségügyi alkalmazásai előtt.</p>
-        <a href="https://www.origo.hu/tudomany/2026/03/mesterseges-intelligencia-veszelyes-tanacsado" class="card-link" target="_blank" rel="noopener">
-          <span>Origo</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-      </div>
-    </article>
   </div>
 
   <footer>
@@ -401,16 +125,17 @@
 </div>
 
 <script>
-function filter(cat) {
+const total = 0;
+function filter(btn, cat) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
+  let visible = 0;
   document.querySelectorAll('.news-card').forEach(card => {
-    if (cat === 'mind' || card.dataset.category === cat) {
-      card.classList.remove('hidden');
-    } else {
-      card.classList.add('hidden');
-    }
+    const show = cat === 'mind' || card.dataset.category === cat;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
   });
+  document.getElementById('count').textContent = visible;
 }
 </script>
 </body>

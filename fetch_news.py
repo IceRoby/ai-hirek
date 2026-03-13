@@ -6,6 +6,7 @@ import re
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 today = datetime.date.today().strftime("%Y. %m. %d.")
+now = datetime.datetime.utcnow().strftime("%Y. %m. %d. %H:%M:%S UTC")
 
 response = client.messages.create(
     model="claude-haiku-4-5-20251001",
@@ -176,7 +177,7 @@ html = f"""<!DOCTYPE html>
   </div>
   <p class="news-count">Megjelenített hírek: <span id="count">{total}</span> / {total}</p>
   <div class="news-grid" id="grid">{news_items_html}</div>
-  <footer>Generálva <strong>Claude AI</strong> által · {news_json['date']} · Minden reggel 6:00-kor frissül</footer>
+  <footer>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong> · Minden reggel 6:00-kor frissül</footer>
 </div>
 <script>
 function filter(btn,cat){{

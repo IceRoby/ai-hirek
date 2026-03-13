@@ -12,16 +12,28 @@ now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %
 
 # --- RSS FEED GYŰJTÉS ---
 RSS_FEEDS = [
+    # Tech portálok
     ("TechCrunch AI", "https://techcrunch.com/category/artificial-intelligence/feed/"),
     ("The Verge AI", "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"),
     ("Ars Technica AI", "https://feeds.arstechnica.com/arstechnica/technology-lab"),
     ("VentureBeat AI", "https://venturebeat.com/category/ai/feed/"),
     ("Wired AI", "https://www.wired.com/feed/tag/ai/latest/rss"),
     ("MIT Tech Review AI", "https://www.technologyreview.com/feed/"),
-    ("Import AI", "https://importai.substack.com/feed"),
-    ("The Batch", "https://www.deeplearning.ai/the-batch/feed/"),
     ("Futurism AI", "https://futurism.com/artificial-intelligence/rss"),
     ("Reuters Tech", "https://feeds.reuters.com/reuters/technologyNews"),
+    # AI hírlevelek
+    ("Import AI", "https://importai.substack.com/feed"),
+    ("The Batch deeplearning.ai", "https://www.deeplearning.ai/the-batch/feed/"),
+    # Google News - magyar és angol
+    ("Google News AI (HU)", "https://news.google.com/rss/search?q=mesterséges+intelligencia&hl=hu&gl=HU&ceid=HU:hu"),
+    ("Google News AI (EN)", "https://news.google.com/rss/search?q=artificial+intelligence&hl=en&gl=US&ceid=US:en"),
+    ("Google News OpenAI", "https://news.google.com/rss/search?q=OpenAI+Anthropic+Gemini&hl=en&gl=US&ceid=US:en"),
+    # Reddit
+    ("Reddit r/artificial", "https://www.reddit.com/r/artificial/.rss"),
+    ("Reddit r/MachineLearning", "https://www.reddit.com/r/MachineLearning/.rss"),
+    ("Reddit r/ChatGPT", "https://www.reddit.com/r/ChatGPT/.rss"),
+    # Hacker News
+    ("Hacker News", "https://news.ycombinator.com/rss"),
 ]
 
 rss_headlines = []
@@ -34,7 +46,7 @@ for name, url in RSS_FEEDS:
             ns = ""
             items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
             count = 0
-            for item in items[:5]:
+            for item in items[:8]:
                 title_el = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
                 link_el = item.find("link") or item.find("{http://www.w3.org/2005/Atom}link")
                 title = title_el.text.strip() if title_el is not None and title_el.text else ""
@@ -46,7 +58,7 @@ for name, url in RSS_FEEDS:
     except Exception as e:
         print(f"RSS hiba: {name} - {e}")
 
-rss_context = "\n".join(rss_headlines[:60])
+rss_context = "\n".join(rss_headlines[:100])
 print(f"\nÖsszes RSS cím: {len(rss_headlines)}")
 
 # --- CLAUDE API HÍVÁS ---
@@ -56,28 +68,30 @@ response = client.messages.create(
     tools=[{"type": "web_search_20250305", "name": "web_search"}],
     messages=[{
         "role": "user",
-        "content": f"""Mai dátum: {today}
+        "        content": f"""Mai dátum: {today}
 
-Az alábbi friss AI híreket gyűjtöttem RSS feedekből – ezeket használd kiindulópontként, és egészítsd ki webes kereséssel:
+Te egy AI hírigazgató vagy. Feladatod: friss AI híreket keresni és azokról SAJÁT SZAVAKKAL magyar összefoglalókat írni.
+
+Az alábbi friss címek RSS feedekből érkeztek – ezeket használd kiindulópontként:
 
 {rss_context}
 
-Végezz még 5 célzott keresést:
+Végezz még 5 webes keresést:
 1. AI news today {today}
-2. OpenAI Anthropic Google AI news this week
-3. AI startup funding new model
-4. EU AI regulation policy
+2. OpenAI Anthropic Google AI news
+3. AI startup new model released
+4. EU AI regulation news
 5. magyar mesterséges intelligencia hírek
 
-Fontos extra források: axios.com, blog.google, futurism.com, theguardian.com, businessinsider.com, wsj.com, time.com, x.ai/news, runwayml.com, anthropic.com/news, openai.com/blog, klub.ite.hu
+Keresendő oldalak: axios.com, blog.google, futurism.com, theguardian.com, businessinsider.com, wsj.com, anthropic.com/news, openai.com/blog, x.ai/news, techcrunch.com, theverge.com
 
-Gyűjts össze 30-50 EGYEDI hírt. Minden hírhez írj RÉSZLETES összefoglalót az alábbi struktúrában.
+Gyűjts 30-50 egyedi hírt. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
 
-Adj vissza KIZÁRÓLAG valid JSON-t, semmi mást:
-{{"date":"{today}","summary":"3-4 mondatos összefoglaló magyarul a mai legfontosabb AI hírekről","news":[{{"title":"Hír címe magyarul","summary":"2-3 mondatos rövid összefoglaló magyarul – mi történt pontosan","details":"4-6 mondatos részletes kifejtés magyarul: konkrét számok, nevek, összefüggések, technikai részletek","relevance":"1-2 mondat magyarul: miért érdekes ez egy hétköznapi olvasónak, mi változik az életében","source":"Forrás neve","url":"https://...","category":"Nagy cégek"}}]}}
+Válaszolj KIZÁRÓLAG valid JSON-nal:
+{{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"4-6 mondatos részletes kifejtés: számok, nevek, összefüggések","relevance":"1-2 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}
 
 Kategóriák: Magyar, Nagy cégek, Startupok, Szabályozás, Tudomány, Alkalmazások, Biztonság
-Csak JSON-t adj vissza, markdown kód blokkot se használj!"""
+CSAK JSON-t írj, semmit előtte vagy utána!"""
     }]
 )
 

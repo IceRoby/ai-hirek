@@ -2,7 +2,33 @@ name: Reggeli AI Hírek
 
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 5 * * 1'
+
+  # --- NAPONTA EGYSZER ---
+  #schedule:
+  #  - cron: '0 5 * * *'
+
+  # --- NAPONTA KÉTSZER ---
+  #schedule:
+  #  - cron: '0 5 * * *'
+  #  - cron: '0 17 * * *'
+
+  # --- CSAK HÉTKÖZNAPOKON ---
+  #schedule:
+  #  - cron: '0 5 * * 1-5'
+
+  # --- KÉTNAPONTA ---
+  #schedule:
+  #  - cron: '0 5 */2 * *'
+
+  # --- ÓRÁNKÉNT ---
+  #schedule:
+  #  - cron: '0 * * * *'
+
+  # --- MINDEN 6 ÓRÁBAN ---
+  #schedule:
+  #  - cron: '0 */6 * * *'
+
   workflow_dispatch:
 
 jobs:
@@ -35,9 +61,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "AI Hírek Bot"
-          git add docs/index.html sources.txt
+          git add -A
           git diff --staged --quiet && echo "No changes" && exit 0
-          git commit -m "🤖 AI hírek frissítve - $(date +'%Y.%m.%d')"
+          git commit -m "🤖 AI hírek frissítve - $(date +'%Y.%m.%d %H:%M')"
           git fetch origin main
           git rebase origin/main
           git push origin main

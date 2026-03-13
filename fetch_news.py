@@ -16,6 +16,8 @@ now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime("%Y. %
 rss_feeds = []
 domains = []
 
+news_count = "25-35"  # alapértelmezett, sources.txt felülírja
+
 try:
     with open("sources.txt", "r", encoding="utf-8") as f:
         for line in f:
@@ -30,7 +32,9 @@ try:
                 rss_feeds.append((name, value))
             elif typ in ("domain", "url"):
                 domains.append((name, value))
-    print(f"sources.txt: {len(rss_feeds)} RSS feed, {len(domains)} domain betöltve")
+            elif typ == "config" and name == "hirek_szama":
+                news_count = value  # pl. "25-35"
+    print(f"sources.txt: {len(rss_feeds)} RSS feed, {len(domains)} domain, hírek: {news_count}")
 except Exception as e:
     print(f"sources.txt hiba: {e} - alapértelmezett feedek használata")
     rss_feeds = [
@@ -121,7 +125,7 @@ Végezz 5 webes keresést:
 
 Extra keresendő oldalak: {domain_list}
 
-Gyűjts 15-20 EGYEDI hírt amelyek {since_text} jelentek meg. Régebbi vagy ismétlődő híreket NE szerepeltess. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
+Gyűjts {news_count} EGYEDI hírt amelyek {since_text} jelentek meg. Régebbi vagy ismétlődő híreket NE szerepeltess. Minden hírről írj SAJÁT SZAVAKKAL magyar összefoglalót.
 
 Válaszolj KIZÁRÓLAG valid JSON-nal, semmi mással:
 {{"date":"{today}","summary":"3-4 mondatos napi összefoglaló magyarul","news":[{{"title":"hír címe magyarul","summary":"2-3 mondatos összefoglaló saját szavakkal","details":"2-3 mondatos kifejtés: számok, nevek, összefüggések","relevance":"1 mondat: miért érdekes egy átlagolvasónak","source":"pl. TechCrunch","url":"https://...","category":"Nagy cégek"}}]}}

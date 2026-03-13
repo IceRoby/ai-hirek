@@ -218,6 +218,9 @@ html = f"""<!DOCTYPE html>
   @keyframes fadeUp{{from{{opacity:0;transform:translateY(16px)}}to{{opacity:1;transform:translateY(0)}}}}
   @keyframes pulse{{0%,100%{{opacity:1;transform:scale(1)}}50%{{opacity:.5;transform:scale(.7)}}}}
   .hidden{{display:none}}
+  footer p{{margin-bottom:10px}}
+  .legal{{margin-top:20px;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:.75rem;line-height:1.6;color:#888;text-align:left;max-width:800px;margin-left:auto;margin-right:auto}}
+  .legal strong{{color:#aaa}}
 </style>
 </head>
 <body>
@@ -240,7 +243,13 @@ html = f"""<!DOCTYPE html>
   </div>
   <p class="news-count">Megjelenített hírek: <span id="count">{total}</span> / {total}</p>
   <div class="news-grid" id="grid">{news_items_html}</div>
-  <footer>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong> · Minden reggel 6:00-kor frissül</footer>
+  <footer>
+    <p>Generálva <strong>Claude AI</strong> által · Utoljára frissítve: <strong>{now}</strong> · Minden reggel 6:00-kor frissül</p>
+    <div class="legal">
+      <p><strong>Jogi nyilatkozat:</strong> Ez az oldal nyilvánosan elérhető AI-vonatkozású hírek automatikusan generált, saját szavakkal írt összefoglalóit tartalmazza tájékoztatási céllal. Az összefoglalók mesterséges intelligencia által készített, önálló átfogalmazások – nem az eredeti cikkek másolatai vagy reprodukciói. Minden hírhez feltüntetésre kerül az eredeti forrás és annak közvetlen hivatkozása. A hivatkozott cikkek szerzői jogai kizárólag az eredeti szerzőket és kiadókat illetik. Amennyiben tartalomeltávolítási kérelme van, kérjük jelezze és haladéktalanul intézkedünk.</p>
+      <p><strong>Legal notice:</strong> This site publishes AI-generated summaries of publicly available news articles for informational purposes. All summaries are independently rewritten by an AI model and do not reproduce the original articles. Each item credits and links to the original source. All copyrights remain with the respective authors and publishers. This service operates under fair use principles of commentary and news aggregation. If you are a rights holder and wish to request removal of a summary, please contact us and we will act promptly.</p>
+    </div>
+  </footer>
 </div>
 <script>
 function filter(btn,cat){{

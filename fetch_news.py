@@ -241,47 +241,28 @@ def find_section_end(lines, tema_kulcs, file_type="sources"):
 
 
 def auto_add_source(name, url, tema_kulcs, reason="", max_sorok=80):
-    """
-    Új forrást ad a sources.txt-hez #auto jelzéssel,
-    a megfelelő helyre szúrva be.
-    """
+    """Új forrást ad a sources.txt-hez #auto jelzéssel, a megfelelő helyre szúrva be."""
     try:
-        # Méretkorlát ellenőrzés
         if max_sorok > 0 and count_active_lines("sources.txt") >= max_sorok:
             print(f"  #auto forrás kihagyva (max {max_sorok} sor elérve): {name}")
             return
-
         with open("sources.txt", "r", encoding="utf-8") as f:
             content_str = f.read()
-
         if url in content_str:
-            return  # már benne van
-
+            return
         lines = content_str.splitlines(keepends=True)
-
-        # Megkeressük hova szúrjuk be
-        # A sources.txt-ben az "AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT" szekció elé
         insert_idx = -1
         for i, line in enumerate(lines):
             if "AUTOMATIKUSAN FELFEDEZETT" in line or "ide írja az AI" in line.lower():
                 insert_idx = i + 1
                 break
-
         datum = datetime.date.today().isoformat()
-        new_lines = [
-            f"
-# #auto [{datum}] – {reason}
-" if reason else "
-",
-            f"#auto | rss | {name} | {url}
-"
-        ]
-
+        comment = f"# #auto [{datum}] – {reason}\n" if reason else f"# #auto [{datum}]\n"
+        new_lines = [comment, f"#auto | rss | {name} | {url}\n"]
         if insert_idx >= 0:
             lines[insert_idx:insert_idx] = new_lines
         else:
-            lines.extend(new_lines)
-
+            lines.extend(["\n"] + new_lines)
         with open("sources.txt", "w", encoding="utf-8") as f:
             f.writelines(lines)
         print(f"  ✓ #auto forrás hozzáadva: {name} [{tema_kulcs}]")
@@ -290,71 +271,45 @@ def auto_add_source(name, url, tema_kulcs, reason="", max_sorok=80):
 
 
 def auto_add_category(name, tema_kulcs, reason="", max_sorok=80):
-    """
-    Új kategóriát ad a categories.txt-hez #auto jelzéssel,
-    a megfelelő téma szekciójába szúrva be.
-    """
+    """Új kategóriát ad a categories.txt-hez #auto jelzéssel, a megfelelő témaszekciójába."""
     try:
-        # Méretkorlát ellenőrzés
         if max_sorok > 0 and count_active_lines("categories.txt") >= max_sorok:
             print(f"  #auto kategória kihagyva (max {max_sorok} sor elérve): {name}")
             return
-
         with open("categories.txt", "r", encoding="utf-8") as f:
             content_str = f.read()
-
         if f"| {name} |" in content_str:
-            return  # már benne van
-
+            return
         lines = content_str.splitlines(keepends=True)
-
-        # Megkeressük a megfelelő téma szekciót
         insert_idx = -1
         tema_upper = tema_kulcs.upper()
         in_tema = False
         last_cat_in_tema = -1
-
         for i, line in enumerate(lines):
             stripped = line.strip()
-            # Téma szekció fejléce
             if tema_upper in stripped.upper() and stripped.startswith("#"):
                 in_tema = True
-            # Következő szekció → kilépünk
             elif in_tema and stripped.startswith("# ==="):
                 break
-            # Kategória sor a témában
             elif in_tema and stripped.startswith("category"):
                 last_cat_in_tema = i
-            # Auto szekció a témában
             elif in_tema and "AUTOMATIKUSAN" in stripped:
                 insert_idx = i + 1
                 break
-
         if insert_idx < 0 and last_cat_in_tema >= 0:
             insert_idx = last_cat_in_tema + 1
-
-        # Ha nem találtuk a témát, az auto szekcióba szúrjuk
         if insert_idx < 0:
             for i, line in enumerate(lines):
                 if "AUTOMATIKUSAN FELFEDEZETT" in line or "ide írja az AI" in line.lower():
                     insert_idx = i + 1
                     break
-
         datum = datetime.date.today().isoformat()
-        new_lines = [
-            f"# #auto [{datum}] – {reason}
-" if reason else "",
-            f"#auto category | {name} | {tema_kulcs} | mind
-"
-        ]
-        new_lines = [l for l in new_lines if l]  # üres sorok kiszűrése
-
+        comment = f"# #auto [{datum}] – {reason}\n" if reason else f"# #auto [{datum}]\n"
+        new_lines = [comment, f"#auto category | {name} | {tema_kulcs} | mind\n"]
         if insert_idx >= 0:
             lines[insert_idx:insert_idx] = new_lines
         else:
-            lines.extend(["
-"] + new_lines)
-
+            lines.extend(["\n"] + new_lines)
         with open("categories.txt", "w", encoding="utf-8") as f:
             f.writelines(lines)
         print(f"  ✓ #auto kategória hozzáadva: {name} [{tema_kulcs}]")
@@ -363,307 +318,35 @@ def auto_add_category(name, tema_kulcs, reason="", max_sorok=80):
 
 
 def auto_add_topic(kulcs, kulcsszavak, kategoriak, reason="", max_sorok=25):
-    """
-    Új témát ad a topics.txt-hez #auto jelzéssel,
-    az inaktív témák szekciójába.
-    """
+    """Új témát ad a topics.txt-hez #auto jelzéssel, az inaktív témák szekciójába."""
     try:
-        # Méretkorlát ellenőrzés
         if max_sorok > 0 and count_active_lines("topics.txt") >= max_sorok:
             print(f"  #auto téma kihagyva (max {max_sorok} sor elérve): {kulcs}")
             return
-
         with open("topics.txt", "r", encoding="utf-8") as f:
             content_str = f.read()
-
-        if f"topic | {kulcs}" in content_str or f"topic | {kulcs} " in content_str:
-            return  # már benne van
-
+        if f"topic | {kulcs}" in content_str:
+            return
         lines = content_str.splitlines(keepends=True)
-
-        # Az "AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT" szekcióba szúrjuk
         insert_idx = -1
         for i, line in enumerate(lines):
             if "AUTOMATIKUSAN FELFEDEZETT" in line or "ide írja az AI" in line.lower():
                 insert_idx = i + 1
                 break
-
         kw_str  = ", ".join(kulcsszavak[:8])
         kat_str = ", ".join(kategoriak[:5]) if kategoriak else kulcs
-
         datum = datetime.date.today().isoformat()
-        new_lines = [
-            f"
-# #auto [{datum}] – {reason}
-" if reason else "
-",
-            f"#auto topic | {kulcs} | {kw_str} | | {kat_str}
-"
-        ]
-
+        comment = f"\n# #auto [{datum}] – {reason}\n" if reason else f"\n# #auto [{datum}]\n"
+        new_lines = [comment, f"#auto topic | {kulcs} | {kw_str} | | {kat_str}\n"]
         if insert_idx >= 0:
             lines[insert_idx:insert_idx] = new_lines
         else:
             lines.extend(new_lines)
-
         with open("topics.txt", "w", encoding="utf-8") as f:
             f.writelines(lines)
         print(f"  ✓ #auto téma hozzáadva: {kulcs}")
     except Exception as e:
         print(f"  #auto téma hiba: {e}")
-
-
-# ================================================================
-# CLAUDE API HÍVÁS (témánként)
-# ================================================================
-
-def fetch_news_for_tema(tema_kulcs, topic_adat, kategoriak_lista,
-                        rss_feeds, domains, cfg,
-                        date_filter, since_text, today, client):
-    """Egy témához lekéri a híreket Claude API-n keresztül."""
-
-    MODELL      = cfg.get("modell", "claude-haiku-4-5-20251001")
-    HIREK_SZAMA = cfg.get("hirek_szama", "20-25")
-    NYELV       = cfg.get("nyelv", "magyar")
-    FOKUSZ      = cfg.get("fokusz_regiok", "globális, magyar")
-    AUTO_FORRAS = cfg.get("auto_forras_bővítés", "igen") == "igen"
-    AUTO_KAT    = cfg.get("auto_kategoria_bővítés", "igen") == "igen"
-
-    kulcsszavak = topic_adat.get("kulcsszavak", [])
-    kizart      = topic_adat.get("kizart", [])
-    leiras      = topic_adat.get("leiras", tema_kulcs)
-
-    print(f"\n{'─'*55}")
-    print(f"TÉMA: {tema_kulcs.upper()} – {leiras}")
-    print(f"{'─'*55}")
-
-    # Kategória nevek az adott témához
-    tema_kategoriak = [k["nev"] for k in kategoriak_lista
-                      if k["tema"] in (tema_kulcs, "altalanos")]
-    kategoriak_str = ", ".join(tema_kategoriak) if tema_kategoriak else \
-        "Magyar, Nemzetközi, Kutatás, Trendek, Eszközök, Egyéb"
-
-    # Google News feedek generálása a kulcsszavakból
-    tema_rss = list(rss_feeds)
-    meglevo = {n for n, _ in tema_rss}
-    if kulcsszavak:
-        # Első 3 kulcsszóból Google News feed
-        for kw in kulcsszavak[:3]:
-            nev = f"Google News – {kw}"
-            if nev not in meglevo:
-                encoded = urllib.request.pathname2url(kw) if hasattr(urllib.request, 'pathname2url') else kw.replace(" ", "+")
-                url = f"https://news.google.com/rss/search?q={kw.replace(' ','+')}&hl=en&gl=US&ceid=US:en"
-                tema_rss.append((nev, url))
-        # Magyar keresés is
-        hu_nev = f"Google News Magyar – {tema_kulcs}"
-        if hu_nev not in meglevo:
-            tema_rss.append((hu_nev,
-                f"https://news.google.com/rss/search?q={tema_kulcs}+hirek&hl=hu&gl=HU&ceid=HU:hu"))
-
-    # RSS letöltés
-    rss_headlines, rss_stats = fetch_rss_feeds(tema_rss)
-    rss_context = "\n".join(rss_headlines[:60])
-    domain_list = ", ".join([v for _, v in domains])
-    print(f"RSS: {len(rss_headlines)} cím")
-
-    # Keresési témák
-    kereses_lista = []
-    if kulcsszavak:
-        kereses_lista.append(f"{' '.join(kulcsszavak[:4])} news this week")
-        kereses_lista.append(f"{tema_kulcs} latest news")
-    kereses_lista.append(f"{tema_kulcs} news {today}")
-    kereses_lista.append(f"magyar {tema_kulcs} hirek")
-    if kulcsszavak:
-        kereses_lista.append(f"{kulcsszavak[0]} trends 2026")
-    temak_lista = "\n".join([f"{i+1}. {t}" for i, t in enumerate(kereses_lista)])
-
-    kizarasi = f"KIZÁRT témák: {', '.join(kizart)}" if kizart else ""
-
-    # JSON séma (language-aware)
-    if NYELV == "angol":
-        nylv_ut = "Write all summaries in English."
-        json_sema = (f'{{"date":"{today}","tema":"{tema_kulcs}",'
-            f'"summary":"3-4 sentence summary",'
-            f'"new_sources":["url1","url2"],'
-            f'"new_categories":["Cat1","Cat2"],'
-            f'"news":[{{"title":"title","date":"YYYY-MM-DD or empty",'
-            f'"summary":"2-3 sentences","details":"2-3 sentences",'
-            f'"personal_value":"1-2 sentences for reader",'
-            f'"source":"Source","url":"https://...","category":"cat"}}]}}')
-    else:
-        nylv_ut = "Minden összefoglalót MAGYARUL írj, saját szavakkal."
-        json_sema = (f'{{"date":"{today}","tema":"{tema_kulcs}",'
-            f'"summary":"3-4 mondatos összefoglaló magyarul",'
-            f'"new_sources":[{{"name":"Forrás neve","url":"https://rss.url/feed","reason":"miért hasznos"}}],'
-            f'"new_categories":[{{"name":"Kategória neve","reason":"miért illik ide"}}],'
-            f'"new_topics":[{{"kulcs":"uj_tema","kulcsszavak":["kw1"],"kategoriak":["Kat1"],"reason":"miért érdekes"}}],'
-            f'"news":[{{"title":"hír címe magyarul",'
-            f'"date":"forrás cikk dátuma ÉÉÉÉ-HH-NN formátumban vagy üres",'
-            f'"summary":"2-3 mondatos összefoglaló saját szavakkal",'
-            f'"details":"2-3 mondatos kifejtés: számok, nevek, összefüggések",'
-            f'"personal_value":"1-2 mondat: mit jelent ez az olvasónak - konkrét haszna vagy lehetősége, kerülve kockázatos tanácsokat",'
-            f'"source":"Forrás neve","url":"https://...","category":"kategória"}}]}}')
-
-    auto_utasitas = ""
-    if AUTO_FORRAS:
-        auto_utasitas += """
-HA találsz megbízható, rendszeresen frissülő RSS feedet a témához,
-add meg a new_sources listában strukturáltan (max 3):
-  {"name": "Forrás neve", "url": "https://rss-url.com/feed", "reason": "miért hasznos"}"""
-
-    if AUTO_KAT:
-        auto_utasitas += f"""
-HA a hírek között olyan alkategória jelenik meg ami nincs a listában ({kategoriak_str}),
-add meg a new_categories listában strukturáltan (max 3):
-  {{"name": "Kategória neve", "reason": "miért illik ide"}}
-Fontos: a kategória a(z) '{tema_kulcs}' témába illő legyen, logikusan."""
-
-    if cfg.get("auto_tema_bővítés","igen") == "igen":
-        auto_utasitas += """
-HA a keresés során olyan TELJESEN ÚJ témát fedezel fel ami releváns lehet,
-add meg a new_topics listában (max 2):
-  {"kulcs": "uj_tema", "kulcsszavak": ["kw1","kw2"], "kategoriak": ["Kat1","Kat2"], "reason": "miért érdekes"}
-Csak valóban új témát javasolj, ne olyat ami már szerepel a listában."""
-
-    print(f"Claude API hívás... ({MODELL})")
-
-    response = client.messages.create(
-        model=MODELL, max_tokens=16000,
-        tools=[{"type": "web_search_20250305", "name": "web_search"}],
-        messages=[{"role": "user", "content":
-            f"""Mai dátum: {today}
-
-Te a(z) '{leiras}' témájú hírek szerkesztője vagy.
-{nylv_ut}
-
-{date_filter}
-{kizarasi}
-
-FÓKUSZ: {FOKUSZ}
-KULCSSZAVAK amelyekre különösen figyelj: {', '.join(kulcsszavak) if kulcsszavak else tema_kulcs}
-
-Friss RSS hírcímek:
-{rss_context}
-
-Keresési témák:
-{temak_lista}
-
-Extra oldalak: {domain_list}
-
-Gyűjts {HIREK_SZAMA} EGYEDI hírt amelyek {since_text} jelentek meg.
-Régebbi vagy ismétlődő híreket NE szerepeltess.
-Minden hírhez add meg a forrás cikk dátumát ha ismert!
-
-Elérhető kategóriák: {kategoriak_str}
-{auto_utasitas}
-
-KIZÁRÓLAG valid JSON-t írj:
-{json_sema}"""
-        }]
-    )
-
-    # JSON kinyerése
-    news_json = None
-    for block in response.content:
-        if block.type == "text":
-            text = block.text.strip()
-            text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
-            text = re.sub(r"\s*```$", "", text)
-            try:
-                news_json = json.loads(text.strip())
-                print(f"OK: {len(news_json.get('news',[]))} hír ({tema_kulcs})")
-                break
-            except:
-                m = re.search(r'\{[\s\S]*"news"\s*:\s*\[[\s\S]*?\]\s*\}', text)
-                if m:
-                    try:
-                        news_json = json.loads(m.group())
-                        print(f"OK regex: {len(news_json.get('news',[]))} hír")
-                        break
-                    except: pass
-
-    if not news_json:
-        print(f"FALLBACK: {tema_kulcs}")
-        news_json = {"date": today, "tema": tema_kulcs,
-                     "summary": f"A {leiras} hírek betöltése során hiba történt.",
-                     "news": [], "new_sources": [], "new_categories": []}
-
-    # Automatikus bővítések feldolgozása
-    max_src = int(cfg.get("max_sources_sorok", "80"))
-    max_cat = int(cfg.get("max_categories_sorok", "80"))
-    max_top = int(cfg.get("max_topics_sorok", "25"))
-
-    if AUTO_FORRAS:
-        for item_src in news_json.get("new_sources", []):
-            if isinstance(item_src, dict):
-                url  = item_src.get("url","")
-                name = item_src.get("name", f"Auto – {tema_kulcs}")
-                reason = item_src.get("reason","")
-            elif isinstance(item_src, str) and item_src.startswith("http"):
-                url, name, reason = item_src, f"Auto – {tema_kulcs}", ""
-            else:
-                continue
-            if url:
-                auto_add_source(name, url, tema_kulcs, reason, max_src)
-
-    if AUTO_KAT:
-        for item_cat in news_json.get("new_categories", []):
-            if isinstance(item_cat, dict):
-                name   = item_cat.get("name","")
-                reason = item_cat.get("reason","")
-            elif isinstance(item_cat, str) and item_cat:
-                name, reason = item_cat, ""
-            else:
-                continue
-            if name:
-                auto_add_category(name, tema_kulcs, reason, max_cat)
-
-    if cfg.get("auto_tema_bővítés","igen") == "igen":
-        for item_top in news_json.get("new_topics", []):
-            if isinstance(item_top, dict):
-                kulcs     = item_top.get("kulcs","")
-                kw        = item_top.get("kulcsszavak",[])
-                kats      = item_top.get("kategoriak",[])
-                reason    = item_top.get("reason","")
-                if kulcs:
-                    auto_add_topic(kulcs, kw, kats, reason, max_top)
-
-    # Token használat és költség kiszámítása
-    usage = getattr(response, 'usage', None)
-    if usage:
-        input_tok  = getattr(usage, 'input_tokens', 0)
-        output_tok = getattr(usage, 'output_tokens', 0)
-        arak = KOLTSEG_TABLA.get(MODELL, {"input": 0.003, "output": 0.015})
-        koltseg_usd = (input_tok / 1000 * arak["input"]) + (output_tok / 1000 * arak["output"])
-
-        # Forint árfolyam lekérése (fallback: 370 Ft/USD)
-        huf_rate = 370
-        try:
-            req = urllib.request.Request(
-                "https://api.exchangerate-api.com/v4/latest/USD",
-                headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                rates = json.loads(resp.read().decode())
-                huf_rate = rates.get("rates", {}).get("HUF", 370)
-        except:
-            pass  # fallback árfolyamot használunk
-
-        koltseg_huf = koltseg_usd * huf_rate
-        news_json["_token_usage"] = {
-            "input_tokens":  input_tok,
-            "output_tokens": output_tok,
-            "total_tokens":  input_tok + output_tok,
-            "koltseg_usd":   round(koltseg_usd, 6),
-            "koltseg_huf":   round(koltseg_huf, 2),
-            "huf_rate":      round(huf_rate, 1),
-        }
-        print(f"  Token: {input_tok:,} in + {output_tok:,} out = {input_tok+output_tok:,} total")
-        print(f"  Költség: ${koltseg_usd:.5f} ≈ {koltseg_huf:.1f} Ft (árfolyam: {huf_rate:.0f} Ft/USD)")
-    else:
-        news_json["_token_usage"] = {}
-
-    news_json["_rss_stats"] = rss_stats
-    return news_json
 
 
 # ================================================================
@@ -1103,17 +786,15 @@ print(f"  Havi becslés ({cron_str}): ${havi_usd:.3f} ≈ {havi_huf:.0f} Ft/hó"
 try:
     with open("history.txt", "r", encoding="utf-8") as f:
         htxt = f.read()
-    koltseg_sor = f"Költség: ${osszes_usd:.5f} ≈ {osszes_huf:.1f} Ft | Token: {osszes_input+osszes_output:,}
-"
-    # Beillesztjük az utolsó FUTÁS bejegyzés után
-    htxt = htxt.replace(
-        f"Témák: {', '.join(aktiv_temak)} | Modell: {MODELL} | Hírek: {sum(len(nj.get('news',[])) for nj in tema_hirek.values())}
-",
-        f"Témák: {', '.join(aktiv_temak)} | Modell: {MODELL} | Hírek: {sum(len(nj.get('news',[])) for nj in tema_hirek.values())}
-" + koltseg_sor
-    )
+    koltseg_sor = f"Költség: ${osszes_usd:.5f} ≈ {osszes_huf:.1f} Ft | Token: {osszes_input+osszes_output:,}\n"
+    temak_sor_prefix = f"Témák: {', '.join(aktiv_temak)} | Modell: {MODELL} | Hírek:"
+    htxt_new = htxt
+    for line in htxt.split("\n"):
+        if line.startswith(temak_sor_prefix):
+            htxt_new = htxt_new.replace(line + "\n", line + "\n" + koltseg_sor, 1)
+            break
     with open("history.txt", "w", encoding="utf-8") as f:
-        f.write(htxt)
+        f.write(htxt_new)
 except Exception as e:
     print(f"  (history.txt költség mentési hiba: {e})")
 

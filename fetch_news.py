@@ -9,8 +9,79 @@
 #   wordpress.txt  → WP oldalak
 # ================================================================
 
-import anthropic, json, datetime, os, re, urllib.request
+import anthropic, json, datetime, os, re, urllib.request, traceback
 import xml.etree.ElementTree as ET
+
+# ================================================================
+# HIBAKEZELÉS ÉS NAPLÓZÁS
+# ================================================================
+ERROR_LOG = "error.log"
+MAX_LOG_SIZE = 2 * 1024 * 1024  # 2MB
+
+def log_error(context, error, extra=None):
+    """
+    Részletes hibaüzenetet ír az error.log fájlba.
+    Az újabb hibák mindig a fájl TETEJÉRE kerülnek.
+    Ha a fájl eléri a 2MB-ot, a legrégebbi bejegyzések törlődnek.
+    """
+    now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime(
+        "%Y.%m.%d %H:%M:%S")
+    sep = "─" * 60
+    lines = [
+        "",
+        sep,
+        f"❌ HIBA: {now}",
+        f"Kontextus: {context}",
+        f"Hiba típusa: {type(error).__name__}",
+        f"Hiba üzenet: {str(error)}",
+    ]
+    if extra:
+        lines.append(f"Extra info: {extra}")
+    tb = traceback.format_exc()
+    if tb and tb.strip() != "NoneType: None":
+        lines.append("Stack trace:")
+        lines.append(tb)
+    lines.append(sep)
+    lines.append("")
+    entry = "\n".join(lines)
+    
+    try:
+        # Meglévő tartalom beolvasása
+        existing = ""
+        if os.path.exists(ERROR_LOG):
+            with open(ERROR_LOG, "r", encoding="utf-8") as f:
+                existing = f.read()
+        
+        # Új tartalom = új hiba + régi tartalom (legfrissebb felül)
+        new_content = entry + existing
+        
+        # Méretkorlát: ha > 2MB, levágjuk a végét
+        if len(new_content.encode("utf-8")) > MAX_LOG_SIZE:
+            # Becsléssel levágjuk az utolsó 20%-ot
+            cutoff = int(len(new_content) * 0.8)
+            new_content = new_content[:cutoff]
+            new_content += f"\n\n[...régebbi bejegyzések eltávolítva - méretkorlát ({MAX_LOG_SIZE//1024}KB) elérve...]\n"
+        
+        with open(ERROR_LOG, "w", encoding="utf-8") as f:
+            f.write(new_content)
+            
+    except Exception as log_err:
+        print(f"⚠️ Hibanaplózás sikertelen: {log_err}")
+
+def log_info(message):
+    """Tájékoztató üzenet az error.log-ba (nem hiba, de fontos esemény)."""
+    now = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).strftime(
+        "%Y.%m.%d %H:%M:%S")
+    try:
+        existing = ""
+        if os.path.exists(ERROR_LOG):
+            with open(ERROR_LOG, "r", encoding="utf-8") as f:
+                existing = f.read()
+        entry = f"ℹ️  {now} – {message}\n"
+        with open(ERROR_LOG, "w", encoding="utf-8") as f:
+            f.write(entry + existing)
+    except:
+        pass
 
 
 # ================================================================
@@ -188,6 +259,10 @@ def fetch_rss_feeds(rss_feeds):
             stats.append(f"  {name:<40} OK    {count}")
         except Exception as e:
             stats.append(f"  {name:<40} HIBA  {str(e)[:45]}")
+            if "403" in str(e) or "404" in str(e) or "timeout" in str(e).lower():
+                pass  # Ismert hibák - nem naplózzuk
+            else:
+                log_error(f"RSS letöltés – {name}", e, extra=f"URL: {url[:80]}")
     return headlines, stats
 
 
@@ -579,7 +654,13 @@ KIZÁRÓLAG valid JSON-t írj:
                     except: pass
 
     if not news_json:
+        err_msg = f"JSON parse sikertelen a '{tema_kulcs}' témánál"
         print(f"FALLBACK: {tema_kulcs}")
+        log_error(
+            f"Claude API válasz feldolgozás – téma: {tema_kulcs}",
+            Exception(err_msg),
+            extra=f"Modell: {MODELL} | RSS címek: {len(rss_headlines)}"
+        )
         news_json = {"date": today, "tema": tema_kulcs,
                      "summary": f"A {leiras} hírek betöltése során hiba történt.",
                      "news": [], "new_sources": [], "new_categories": [], "new_topics": []}
@@ -688,6 +769,9 @@ HAVAI_LIMIT    = float(cfg.get("havai_limit", "0"))
 
 becsult = becsuld_koltseg(MODELL, len(aktiv_temak), cfg.get("hirek_szama", "20-25"))
 
+# Futás kezdete naplózva
+log_info(f"Futás indul – Témák: {', '.join(aktiv_temak)} | Modell: {MODELL}")
+
 print(f"\n{'='*60}")
 print(f"INDULÁS: {now}")
 print(f"Témák: {', '.join(aktiv_temak)} | Modell: {MODELL}")
@@ -731,16 +815,32 @@ for tema_kulcs in aktiv_temak:
     })
     kategoriak_lista = cat_by_tema.get(tema_kulcs, []) + cat_by_tema.get("altalanos", [])
 
-    news_json = fetch_news_for_tema(
-        tema_kulcs, topic_adat, kategoriak_lista,
-        base_rss, domains, cfg,
-        date_filter, since_text, today, client
-    )
+    try:
+        news_json = fetch_news_for_tema(
+            tema_kulcs, topic_adat, kategoriak_lista,
+            base_rss, domains, cfg,
+            date_filter, since_text, today, client
+        )
+    except Exception as e:
+        log_error(
+            f"fetch_news_for_tema – téma: {tema_kulcs}",
+            e,
+            extra=f"Modell: {MODELL} | Kulcsszavak: {topic_adat.get('kulcsszavak',[])} | API key megvan: {bool(os.environ.get('ANTHROPIC_API_KEY'))}"
+        )
+        print(f"❌ Hiba a '{tema_kulcs}' témánál: {e}")
+        news_json = {"date": today, "tema": tema_kulcs,
+                     "summary": f"Hiba a hírek lekérése során: {str(e)[:100]}",
+                     "news": [], "new_sources": [], "new_categories": [], "new_topics": [],
+                     "_token_usage": {}, "_rss_stats": []}
+
     tema_hirek[tema_kulcs] = news_json
     all_rss_stats.extend(news_json.pop("_rss_stats", []))
 
-    with open(f"news_{tema_kulcs}.json", "w", encoding="utf-8") as f:
-        json.dump(news_json, f, ensure_ascii=False, indent=2)
+    try:
+        with open(f"news_{tema_kulcs}.json", "w", encoding="utf-8") as f:
+            json.dump(news_json, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        log_error(f"news_{tema_kulcs}.json mentése", e)
 
 
 # History frissítése
@@ -1035,6 +1135,11 @@ for wp in wp_sites:
             wp_feltoltve += len(uploaded)
             print(f"✅ WP{i}: {len(uploaded)} post feltöltve")
     except Exception as e:
+        log_error(
+            f"WordPress feltöltés – WP{i} ({wp_url})",
+            e,
+            extra=f"Típus: {tipus} | Post mód: {wp.get('post_mode')} | User: {wp.get('user')}"
+        )
         print(f"❌ WP{i} hiba: {e}")
 
 # ================================================================

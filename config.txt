@@ -1,25 +1,25 @@
 # ================================================================
-# HÍRGYŰJTŐ RENDSZER - FŐ KONFIGURÁCIÓ (config.txt)
+# HÃRGYÅ°JTÅ RENDSZER - FÅ KONFIGURÃCIÃ (config.txt)
 # ================================================================
-# Csak a technikai beállítások vannak itt.
+# Csak a technikai beÃ¡llÃ­tÃ¡sok vannak itt.
 #
-# TÖBBI KONFIGURÁCIÓ:
-#   topics.txt     → témák és kulcsszavak
-#   categories.txt → kategóriák és WP hozzárendelés
-#   sources.txt    → RSS feedek és domainek
-#   wordpress.txt  → WordPress oldalak beállításai
+# TÃBBI KONFIGURÃCIÃ:
+#   topics.txt     â tÃ©mÃ¡k Ã©s kulcsszavak
+#   categories.txt â kategÃ³riÃ¡k Ã©s WP hozzÃ¡rendelÃ©s
+#   sources.txt    â RSS feedek Ã©s domainek
+#   wordpress.txt  â WordPress oldalak beÃ¡llÃ­tÃ¡sai
 # ================================================================
 
 
 # ----------------------------------------------------------------
-# 1. AKTÍV TÉMÁK
+# 1. AKTÃV TÃMÃK
 # ----------------------------------------------------------------
-# Melyik témákat gyűjtse össze egy futás alatt.
-# A témák a topics.txt-ben vannak definiálva.
-# Vesszővel elválasztva, max 5 ajánlott (több = drágább).
+# Melyik tÃ©mÃ¡kat gyÅ±jtse Ã¶ssze egy futÃ¡s alatt.
+# A tÃ©mÃ¡k a topics.txt-ben vannak definiÃ¡lva.
+# VesszÅvel elvÃ¡lasztva, max 5 ajÃ¡nlott (tÃ¶bb = drÃ¡gÃ¡bb).
 #
-# FIGYELEM: Minden téma = 1 külön Claude API hívás!
-# Haiku modellel 3 téma ≈ $0.03-0.09 / futás
+# FIGYELEM: Minden tÃ©ma = 1 kÃ¼lÃ¶n Claude API hÃ­vÃ¡s!
+# Haiku modellel 3 tÃ©ma â $0.03-0.09 / futÃ¡s
 #
 config | aktiv_temak | ai
 
@@ -27,90 +27,90 @@ config | aktiv_temak | ai
 # ----------------------------------------------------------------
 # 2. AI MODELL
 # ----------------------------------------------------------------
-# Melyik AI modellt használja a hírgyűjtéshez.
-# Minden providerhez külön API kulcs kell GitHub Secrets-ben!
+# Melyik AI modellt hasznÃ¡lja a hÃ­rgyÅ±jtÃ©shez.
+# Minden providerhez kÃ¼lÃ¶n API kulcs kell GitHub Secrets-ben!
 #
-# ── ANTHROPIC (Claude) – ANTHROPIC_API_KEY ──────────────────────
-#   claude-haiku-4-5-20251001  → legolcsóbb  ~$0.01-0.03/futás
-#   claude-sonnet-4-6          → ajánlott    ~$0.05-0.10/futás ← legjobb ár/érték
-#   claude-opus-4-6            → legjobb     ~$0.15-0.30/futás
-#   claude-opus-4-5            → erős        ~$0.15-0.30/futás
+# ââ ANTHROPIC (Claude) â ANTHROPIC_API_KEY ââââââââââââââââââââââ
+#   claude-haiku-4-5-20251001  â legolcsÃ³bb  ~$0.01-0.03/futÃ¡s
+#   claude-sonnet-4-6          â ajÃ¡nlott    ~$0.05-0.10/futÃ¡s â legjobb Ã¡r/Ã©rtÃ©k
+#   claude-opus-4-6            â legjobb     ~$0.15-0.30/futÃ¡s
+#   claude-opus-4-5            â erÅs        ~$0.15-0.30/futÃ¡s
 #
-# ── OPENAI (ChatGPT) – OPENAI_API_KEY ───────────────────────────
-#   gpt-4o-mini                → olcsó       ~$0.01-0.03/futás
-#   gpt-4o                     → jó          ~$0.05-0.15/futás
-#   gpt-4.1                    → ajánlott    ~$0.04-0.10/futás
-#   gpt-4.1-mini               → olcsó       ~$0.01-0.03/futás
+# ââ OPENAI (ChatGPT) â OPENAI_API_KEY âââââââââââââââââââââââââââ
+#   gpt-4o-mini                â olcsÃ³       ~$0.01-0.03/futÃ¡s
+#   gpt-4o                     â jÃ³          ~$0.05-0.15/futÃ¡s
+#   gpt-4.1                    â ajÃ¡nlott    ~$0.04-0.10/futÃ¡s
+#   gpt-4.1-mini               â olcsÃ³       ~$0.01-0.03/futÃ¡s
 #
-# ── GOOGLE (Gemini) – GOOGLE_API_KEY ────────────────────────────
-#   gemini-2.0-flash           → legolcsóbb  ~$0.005-0.02/futás
-#   gemini-2.5-pro             → erős        ~$0.05-0.15/futás
-#   gemini-1.5-flash           → olcsó       ~$0.003-0.01/futás
+# ââ GOOGLE (Gemini) â GOOGLE_API_KEY ââââââââââââââââââââââââââââ
+#   gemini-2.0-flash           â legolcsÃ³bb  ~$0.005-0.02/futÃ¡s
+#   gemini-2.5-pro             â erÅs        ~$0.05-0.15/futÃ¡s
+#   gemini-1.5-flash           â olcsÃ³       ~$0.003-0.01/futÃ¡s
 #
-# MEGJEGYZÉS: OpenAI és Google esetén web search nem elérhető,
-# csak az RSS feedekre és a modell tudására támaszkodik.
-# Anthropic Claude-dal a legjobb az élő webes keresés!
+# MEGJEGYZÃS: OpenAI Ã©s Google esetÃ©n web search nem elÃ©rhetÅ,
+# csak az RSS feedekre Ã©s a modell tudÃ¡sÃ¡ra tÃ¡maszkodik.
+# Anthropic Claude-dal a legjobb az Ã©lÅ webes keresÃ©s!
 #
 config | modell | claude-sonnet-4-6
 
 
 # ----------------------------------------------------------------
-# 3. HÍREK SZÁMA TÉMÁNKÉNT
+# 3. HÃREK SZÃMA TÃMÃNKÃNT
 # ----------------------------------------------------------------
-# Formátum: minimum-maximum
-# 10-15 → gyors/olcsó | 20-25 → normál | 25-35 → sok
+# FormÃ¡tum: minimum-maximum
+# 10-15 â gyors/olcsÃ³ | 20-25 â normÃ¡l | 25-35 â sok
 #
 config | hirek_szama | 20-25
 
 
 # ----------------------------------------------------------------
-# 4. KERESÉSI IDŐ ABLAK
+# 4. KERESÃSI IDÅ ABLAK
 # ----------------------------------------------------------------
-# Hány napra visszamenőleg keressen (első futásnál / history reset)
-# 3=napi futáshoz | 7=heti | 14=kéthetente | 30=havonta
+# HÃ¡ny napra visszamenÅleg keressen (elsÅ futÃ¡snÃ¡l / history reset)
+# 3=napi futÃ¡shoz | 7=heti | 14=kÃ©thetente | 30=havonta
 #
 config | idoablak_nap | 7
 
 
 # ----------------------------------------------------------------
-# 5. ÖSSZEFOGLALÓ NYELVE
+# 5. ÃSSZEFOGLALÃ NYELVE
 # ----------------------------------------------------------------
-# magyar / angol / magyar+angol (utóbbi 2x drágább!)
+# magyar / angol / magyar+angol (utÃ³bbi 2x drÃ¡gÃ¡bb!)
 #
 config | nyelv | magyar
 
 
 # ----------------------------------------------------------------
-# 6. FÓKUSZ RÉGIÓK
+# 6. FÃKUSZ RÃGIÃK
 # ----------------------------------------------------------------
-# Milyen régiók híreit preferálja (globális, magyar, európai stb.)
+# Milyen rÃ©giÃ³k hÃ­reit preferÃ¡lja (globÃ¡lis, magyar, eurÃ³pai stb.)
 #
 config | fokusz_regiok | globális, magyar
 
 
 # ----------------------------------------------------------------
-# 7. AUTOMATIKUS BŐVÍTÉS BEÁLLÍTÁSOK
+# 7. AUTOMATIKUS BÅVÃTÃS BEÃLLÃTÃSOK
 # ----------------------------------------------------------------
-# Az AI automatikusan javasolhat új forrásokat, kategóriákat
-# és témákat. Ezeket #auto jelzéssel írja a megfelelő fájlba,
-# mindig az odaillő szekcióba (nem ömlesztve).
+# Az AI automatikusan javasolhat Ãºj forrÃ¡sokat, kategÃ³riÃ¡kat
+# Ã©s tÃ©mÃ¡kat. Ezeket #auto jelzÃ©ssel Ã­rja a megfelelÅ fÃ¡jlba,
+# mindig az odaillÅ szekciÃ³ba (nem Ã¶mlesztve).
 # igen / nem
 #
-config | auto_forras_bővítés     | igen
-config | auto_kategoria_bővítés  | igen
-config | auto_tema_bővítés       | igen
+config | auto_forras_bÅvÃ­tÃ©s     | igen
+config | auto_kategoria_bÅvÃ­tÃ©s  | igen
+config | auto_tema_bÅvÃ­tÃ©s       | igen
 
 # ----------------------------------------------------------------
-# 8. FÁJLMÉRET KORLÁTOK (sorok száma)
+# 8. FÃJLMÃRET KORLÃTOK (sorok szÃ¡ma)
 # ----------------------------------------------------------------
-# Ha egy fájl eléri a korlátot, az AI nem ír bele több #auto sort.
-# A korlát csak az #auto sorokat érinti, a te soraid mindig megmaradnak.
-# 0 = nincs korlát
+# Ha egy fÃ¡jl elÃ©ri a korlÃ¡tot, az AI nem Ã­r bele tÃ¶bb #auto sort.
+# A korlÃ¡t csak az #auto sorokat Ã©rinti, a te soraid mindig megmaradnak.
+# 0 = nincs korlÃ¡t
 #
-# Ajánlott értékek:
-#   sources.txt:    50-100 aktív sor (RSS feedek és domainek)
-#   topics.txt:     20-30 téma
-#   categories.txt: 50-100 kategória
+# AjÃ¡nlott Ã©rtÃ©kek:
+#   sources.txt:    50-100 aktÃ­v sor (RSS feedek Ã©s domainek)
+#   topics.txt:     20-30 tÃ©ma
+#   categories.txt: 50-100 kategÃ³ria
 #
 config | max_sources_sorok    | 80
 config | max_topics_sorok     | 25
@@ -120,54 +120,60 @@ config | max_categories_sorok | 80
 # ----------------------------------------------------------------
 # 8. GITHUB PAGES WEBOLDAL
 # ----------------------------------------------------------------
-# Ha üresen hagyod, az első aktív téma nevéből generálja.
+# Ha Ã¼resen hagyod, az elsÅ aktÃ­v tÃ©ma nevÃ©bÅl generÃ¡lja.
 #
-#config | oldal_cim    | Reggeli Hírek
-#config | oldal_alcim  | Automatikus összefoglaló
-#config | labléc_szoveg | Minden héten frissül
+#config | oldal_cim    | Reggeli HÃ­rek
+#config | oldal_alcim  | Automatikus Ã¶sszefoglalÃ³
+#config | lablÃ©c_szoveg | Minden hÃ©ten frissÃ¼l
 
 
 # ----------------------------------------------------------------
-# 9. ÜTEMEZÉS EMLÉKEZTETŐ
+# 9. ÃTEMEZÃS EMLÃKEZTETÅ
 # ----------------------------------------------------------------
-# Beállítás: .github/workflows/daily-news.yml
+# BeÃ¡llÃ­tÃ¡s: .github/workflows/daily-news.yml
 #
 # Cron referencia:
-#   '0 5 * * 1'   → hétfőnként 6:00 (Budapest télen)
-#   '0 5 * * *'   → naponta 6:00
-#   '0 * * * *'   → óránként (hírportálhoz + append mód)
-#   '0 */6 * * *' → 6 óránként
+#   '0 5 * * 1'   â hÃ©tfÅnkÃ©nt 6:00 (Budapest tÃ©len)
+#   '0 5 * * *'   â naponta 6:00
+#   '0 * * * *'   â Ã³rÃ¡nkÃ©nt (hÃ­rportÃ¡lhoz + append mÃ³d)
+#   '0 */6 * * *' â 6 Ã³rÃ¡nkÃ©nt
 #
-# Budapest télen UTC+1 → 6:00 = cron '0 5'
-# Budapest nyáron UTC+2 → 6:00 = cron '0 4'
+# Budapest tÃ©len UTC+1 â 6:00 = cron '0 5'
+# Budapest nyÃ¡ron UTC+2 â 6:00 = cron '0 4'
 
 
 # ----------------------------------------------------------------
-# 10. KÖLTSÉGKONTROLL
+# 10. KÃLTSÃGKONTROLL
 # ----------------------------------------------------------------
-# FONTOS: Az igazi védelem az Anthropic Console-on van!
-#   console.anthropic.com → Settings → Limits → Monthly spend limit
-#   Ez itt csak egy extra biztosíték és tájékoztató.
+# FONTOS: Az igazi vÃ©delem az Anthropic Console-on van!
+#   console.anthropic.com â Settings â Limits â Monthly spend limit
+#   Ez itt csak egy extra biztosÃ­tÃ©k Ã©s tÃ¡jÃ©koztatÃ³.
 #
-# Becsült költség modellenként (1 téma / 1 futás):
+# BecsÃ¼lt kÃ¶ltsÃ©g modellenkÃ©nt (1 tÃ©ma / 1 futÃ¡s):
 #   Haiku:  ~$0.01-0.03
 #   Sonnet: ~$0.05-0.10
 #   Opus:   ~$0.20-0.50
 #
-# Ha több aktív téma van, szorozd be a témák számával!
-# Pl. 3 téma × Haiku = ~$0.03-0.09 / futás
+# Ha tÃ¶bb aktÃ­v tÃ©ma van, szorozd be a tÃ©mÃ¡k szÃ¡mÃ¡val!
+# Pl. 3 tÃ©ma Ã Haiku = ~$0.03-0.09 / futÃ¡s
 #
-# max_koltseg_per_futes: ha a becsült költség meghaladja ezt,
-#   a script NEM hívja meg a Claude API-t és hibát jelez.
-#   0 = nincs korlát (csak az Anthropic Console limit érvényes)
+# max_koltseg_per_futes: ha a becsÃ¼lt kÃ¶ltsÃ©g meghaladja ezt,
+#   a script NEM hÃ­vja meg a Claude API-t Ã©s hibÃ¡t jelez.
+#   0 = nincs korlÃ¡t (csak az Anthropic Console limit Ã©rvÃ©nyes)
 #
-# figyelmeztes_kuszob: ha a becsült költség eléri ezt az értéket,
-#   figyelmeztetést ír a logba, de még lefut
+# figyelmeztes_kuszob: ha a becsÃ¼lt kÃ¶ltsÃ©g elÃ©ri ezt az Ã©rtÃ©ket,
+#   figyelmeztetÃ©st Ã­r a logba, de mÃ©g lefut
 #
-# havai_limit: csak tájékoztató - a logba írja ha várhatóan
-#   meghaladná a havi keretet (futások száma × becsült költség)
-#   0 = nincs figyelmeztetés
+# havai_limit: csak tÃ¡jÃ©koztatÃ³ - a logba Ã­rja ha vÃ¡rhatÃ³an
+#   meghaladnÃ¡ a havi keretet (futÃ¡sok szÃ¡ma Ã becsÃ¼lt kÃ¶ltsÃ©g)
+#   0 = nincs figyelmeztetÃ©s
 #
 config | max_koltseg_per_futes | 0.10
 config | figyelmeztes_kuszob   | 0.05
 config | havai_limit           | 3.00
+
+config | havai_limit | 
+config | auto_forras_bővítés | igen
+config | auto_kategoria_bővítés | igen
+config | max_sources_sorok | 
+config | max_topics_sorok | 

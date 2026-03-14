@@ -1,0 +1,21 @@
+
+────────────────────────────────────────────────────────────
+❌ HIBA: 2026.03.14 17:56:46
+Kontextus: RSS letöltés – Unite.AI
+Hiba típusa: ParseError
+Hiba üzenet: syntax error: line 1, column 0
+Extra info: URL: https://www.unite.ai/feed/
+Stack trace:
+Traceback (most recent call last):
+  File "/home/runner/work/ai-hirek/ai-hirek/fetch_news.py", line 246, in fetch_rss_feeds
+    tree = ET.parse(resp)
+           ^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/xml/etree/ElementTree.py", line 1219, in parse
+    tree.parse(source, parser)
+  File "/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/xml/etree/ElementTree.py", line 581, in parse
+    self._root = parser._parse_whole(source)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+xml.etree.ElementTree.ParseError: syntax error: line 1, column 0
+
+────────────────────────────────────────────────────────────
+ℹ️  2026.03.14 17:56:44 – Futás indul – Témák: ai | Modell: claude-sonnet-4-6

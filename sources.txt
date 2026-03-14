@@ -194,3 +194,12 @@ domain | ITE.hu Magyar AI   | klub.ite.hu
 
 # #auto [2026-03-14] – AI biztonsági kutatások, autonóm ügynök képességek értékelése, frontier AI rizikók elemzése
 #auto | rss | METR – Model Evaluation and Threat Research | https://metr.org/
+
+# #auto [2026-03-14] – Magyar nyelvű, naprakész AI-hírek szakembereknek és érdeklődőknek, rendszeresen frissül
+#auto | rss | AI Hírfolyam | https://aihirfolyam.hu/feed
+
+# #auto [2026-03-14] – Napi AI összefoglalók dátum szerinti bontásban, kiváló friss hír-aggregátor
+#auto | rss | Creati.ai Daily AI News | https://creati.ai/ai-news/feed
+
+# #auto [2026-03-14] – Mélyebb technikai elemzések LLM-ekről, AI-infrastruktúráról és fejlesztői eszközökről
+#auto | rss | The New Stack – AI | https://thenewstack.io/category/ai/feed

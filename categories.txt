@@ -105,6 +105,10 @@ category | Innováció          | altalanos | wp1, wp2
 
 # ================================================================
 # AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT KATEGÓRIÁK
+# #auto [2026-03-14] – Az NVIDIA GTC és a chiparchitektúra-hírek (Vera CPU, Rubin GPU) rendszeresen visszatérő, önálló témaköré váltak
+#auto category | AI Hardver | ai | mind
+# #auto [2026-03-14] – A Microsoft Copilot Health és hasonló egészségügyi AI-platformok megjelenése önálló kategóriát indokol
+#auto category | Egészségügy AI | ai | mind
 # #auto [2026-03-14] – Speciális egészségügyi AI megoldások, Copilot Health, egészségügyi adatintegráció, diagnózis támogatás
 #auto category | Healthcare AI | ai | mind
 # #auto [2026-03-14] – Az agentic AI fizikai világba való kiterjesztése, emberi jellegű robotok és autonóm rendszerek mind a robotikában, mind az iparban

@@ -80,6 +80,12 @@ topic | jog | GDPR, EU regulation, copyright, adatvédelem, törvény | | Jogi �
 # ================================================================
 # AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT TÉMÁK
 
+# #auto [2026-03-14] – Az AI-videógenerálás 2026-ban kilép a niche-piacról és a fő chatbot-platformokba integrálódik, tömegpiaci eszközzé válva
+#auto topic | ai_video_generation_mainstream | Sora, ChatGPT video, text-to-video, AI filmmaking | | Alkalmazások, Nagy cégek
+
+# #auto [2026-03-14] – Az okostelefonokon futó, alkalmazásokat önállóan vezérlő AI-ügynökök (agentic mobile AI) egy teljesen új felhasználói paradigmát képviselnek
+#auto topic | agentic_mobile_ai | Gemini automation, screen automation, Galaxy S26, Pixel 10, agentic AI | | Alkalmazások, Technológia
+
 # #auto [2026-03-14] – Claude vizuális kimenet generálása (diagram, grafikon) natívan a beszélgetésben – új felhasználói élmény
 #auto topic | claude_visual_reasoning | Claude, vizuális generálás, diagramok, interactive visuals | | Nagy cégek, Alkalmazások
 

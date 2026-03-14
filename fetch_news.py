@@ -378,6 +378,236 @@ else:
     date_filter = f"Csak az elmúlt {IDOABLAK} napban megjelent híreket hozz!"
     since_text  = f"az elmúlt {IDOABLAK} napban"
 
+
+def fetch_news_for_tema(tema_kulcs, topic_adat, kategoriak_lista,
+                        rss_feeds, domains, cfg,
+                        date_filter, since_text, today, client):
+    """Egy témához lekéri a híreket Claude API-n keresztül."""
+
+    MODELL      = cfg.get("modell", "claude-haiku-4-5-20251001")
+    HIREK_SZAMA = cfg.get("hirek_szama", "20-25")
+    NYELV       = cfg.get("nyelv", "magyar")
+    FOKUSZ      = cfg.get("fokusz_regiok", "globális, magyar")
+    AUTO_FORRAS = cfg.get("auto_forras_bővítés", "igen") == "igen"
+    AUTO_KAT    = cfg.get("auto_kategoria_bővítés", "igen") == "igen"
+
+    kulcsszavak = topic_adat.get("kulcsszavak", [])
+    kizart      = topic_adat.get("kizart", [])
+    leiras      = topic_adat.get("leiras", tema_kulcs)
+
+    print(f"\n{'─'*55}")
+    print(f"TÉMA: {tema_kulcs.upper()} – {leiras}")
+    print(f"{'─'*55}")
+
+    tema_kategoriak = [k["nev"] for k in kategoriak_lista
+                      if k["tema"] in (tema_kulcs, "altalanos")]
+    kategoriak_str = ", ".join(tema_kategoriak) if tema_kategoriak else \
+        "Magyar, Nemzetközi, Kutatás, Trendek, Eszközök, Egyéb"
+
+    # Google News feedek generálása
+    tema_rss = list(rss_feeds)
+    meglevo = {n for n, _ in tema_rss}
+    if kulcsszavak:
+        for kw in kulcsszavak[:3]:
+            nev = f"Google News – {kw}"
+            if nev not in meglevo:
+                url = f"https://news.google.com/rss/search?q={kw.replace(' ','+')}&hl=en&gl=US&ceid=US:en"
+                tema_rss.append((nev, url))
+        hu_nev = f"Google News Magyar – {tema_kulcs}"
+        if hu_nev not in meglevo:
+            tema_rss.append((hu_nev,
+                f"https://news.google.com/rss/search?q={tema_kulcs}+hirek&hl=hu&gl=HU&ceid=HU:hu"))
+
+    rss_headlines, rss_stats = fetch_rss_feeds(tema_rss)
+    rss_context = "\n".join(rss_headlines[:60])
+    domain_list = ", ".join([v for _, v in domains])
+    print(f"RSS: {len(rss_headlines)} cím")
+
+    kereses_lista = []
+    if kulcsszavak:
+        kereses_lista.append(f"{' '.join(kulcsszavak[:4])} news this week")
+        kereses_lista.append(f"{tema_kulcs} latest news")
+    kereses_lista.append(f"{tema_kulcs} news {today}")
+    kereses_lista.append(f"magyar {tema_kulcs} hirek")
+    if kulcsszavak:
+        kereses_lista.append(f"{kulcsszavak[0]} trends 2026")
+    temak_lista = "\n".join([f"{i+1}. {t}" for i, t in enumerate(kereses_lista)])
+
+    kizarasi = f"KIZÁRT témák: {', '.join(kizart)}" if kizart else ""
+
+    if NYELV == "angol":
+        nylv_ut = "Write all summaries in English."
+        json_sema = (f'{{"date":"{today}","tema":"{tema_kulcs}",'
+            f'"summary":"3-4 sentence summary",'
+            f'"new_sources":[{{"name":"Source","url":"https://rss.url/feed","reason":"why useful"}}],'
+            f'"new_categories":[{{"name":"Category name","reason":"why it fits"}}],'
+            f'"new_topics":[{{"kulcs":"new_topic","kulcsszavak":["kw1"],"kategoriak":["Cat1"],"reason":"why interesting"}}],'
+            f'"news":[{{"title":"title","date":"YYYY-MM-DD or empty",'
+            f'"summary":"2-3 sentences","details":"2-3 sentences",'
+            f'"personal_value":"1-2 sentences for reader",'
+            f'"source":"Source","url":"https://...","category":"cat"}}]}}')
+    else:
+        nylv_ut = "Minden összefoglalót MAGYARUL írj, saját szavakkal."
+        json_sema = (f'{{"date":"{today}","tema":"{tema_kulcs}",'
+            f'"summary":"3-4 mondatos összefoglaló magyarul",'
+            f'"new_sources":[{{"name":"Forrás neve","url":"https://rss.url/feed","reason":"miért hasznos"}}],'
+            f'"new_categories":[{{"name":"Kategória neve","reason":"miért illik ide"}}],'
+            f'"new_topics":[{{"kulcs":"uj_tema","kulcsszavak":["kw1"],"kategoriak":["Kat1"],"reason":"miért érdekes"}}],'
+            f'"news":[{{"title":"hír címe magyarul",'
+            f'"date":"forrás cikk dátuma ÉÉÉÉ-HH-NN formátumban vagy üres",'
+            f'"summary":"2-3 mondatos összefoglaló saját szavakkal",'
+            f'"details":"2-3 mondatos kifejtés: számok, nevek, összefüggések",'
+            f'"personal_value":"1-2 mondat: mit jelent ez az olvasónak - konkrét haszna vagy lehetősége, kerülve kockázatos tanácsokat",'
+            f'"source":"Forrás neve","url":"https://...","category":"kategória"}}]}}')
+
+    auto_utasitas = ""
+    if AUTO_FORRAS:
+        auto_utasitas += (
+            "\nHA találsz megbízható RSS feedet a témához, add meg a new_sources listában (max 3):"
+            "\n  {\"name\": \"Forrás neve\", \"url\": \"https://rss.url/feed\", \"reason\": \"miért hasznos\"}")
+    if AUTO_KAT:
+        auto_utasitas += (
+            f"\nHA a hírek között olyan alkategória jelenik meg ami nincs a listában ({kategoriak_str}),"
+            "\nadd meg a new_categories listában (max 3):"
+            "\n  {\"name\": \"Kategória neve\", \"reason\": \"miért illik ide\"}")
+    if cfg.get("auto_tema_bővítés","igen") == "igen":
+        auto_utasitas += (
+            "\nHA teljesen új releváns témát fedezel fel, add meg a new_topics listában (max 2):"
+            "\n  {\"kulcs\": \"uj_tema\", \"kulcsszavak\": [\"kw1\"], \"kategoriak\": [\"Kat1\"], \"reason\": \"miért\"}")
+
+    oldal_cim = cfg.get("oldal_cim", leiras)
+
+    print(f"Claude API hívás... ({MODELL})")
+
+    response = client.messages.create(
+        model=MODELL, max_tokens=16000,
+        tools=[{"type": "web_search_20250305", "name": "web_search"}],
+        messages=[{"role": "user", "content":
+            f"""Mai dátum: {today}
+
+Te a(z) '{leiras}' témájú hírek szerkesztője vagy.
+{nylv_ut}
+
+{date_filter}
+{kizarasi}
+
+FÓKUSZ: {FOKUSZ}
+{"KULCSSZAVAK: " + ", ".join(kulcsszavak) if kulcsszavak else ""}
+
+Friss RSS hírcímek:
+{rss_context}
+
+Keresési témák:
+{temak_lista}
+
+Extra oldalak: {domain_list}
+
+Gyűjts {HIREK_SZAMA} EGYEDI hírt amelyek {since_text} jelentek meg.
+Régebbi vagy ismétlődő híreket NE szerepeltess.
+Minden hírhez add meg a forrás cikk dátumát ha ismert!
+
+Elérhető kategóriák: {kategoriak_str}
+{auto_utasitas}
+
+KIZÁRÓLAG valid JSON-t írj:
+{json_sema}"""
+        }]
+    )
+
+    # JSON kinyerése
+    news_json = None
+    for block in response.content:
+        if block.type == "text":
+            text = block.text.strip()
+            text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
+            text = re.sub(r"\s*```$", "", text)
+            try:
+                news_json = json.loads(text.strip())
+                print(f"OK: {len(news_json.get('news',[]))} hír ({tema_kulcs})")
+                break
+            except:
+                m = re.search(r'\{[\s\S]*"news"\s*:\s*\[[\s\S]*?\]\s*\}', text)
+                if m:
+                    try:
+                        news_json = json.loads(m.group())
+                        print(f"OK regex: {len(news_json.get('news',[]))} hír")
+                        break
+                    except: pass
+
+    if not news_json:
+        print(f"FALLBACK: {tema_kulcs}")
+        news_json = {"date": today, "tema": tema_kulcs,
+                     "summary": f"A {leiras} hírek betöltése során hiba történt.",
+                     "news": [], "new_sources": [], "new_categories": [], "new_topics": []}
+
+    # Token használat
+    usage = getattr(response, 'usage', None)
+    if usage:
+        input_tok  = getattr(usage, 'input_tokens', 0)
+        output_tok = getattr(usage, 'output_tokens', 0)
+        arak = KOLTSEG_TABLA.get(MODELL, {"input": 0.003, "output": 0.015})
+        koltseg_usd = (input_tok / 1000 * arak["input"]) + (output_tok / 1000 * arak["output"])
+        huf_rate = 385
+        try:
+            req = urllib.request.Request(
+                "https://api.exchangerate-api.com/v4/latest/USD",
+                headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                rates = json.loads(resp.read().decode())
+                huf_rate = rates.get("rates", {}).get("HUF", 385)
+        except: pass
+        koltseg_huf = koltseg_usd * huf_rate
+        news_json["_token_usage"] = {
+            "input_tokens": input_tok, "output_tokens": output_tok,
+            "total_tokens": input_tok + output_tok,
+            "koltseg_usd": round(koltseg_usd, 6),
+            "koltseg_huf": round(koltseg_huf, 2),
+            "huf_rate": round(huf_rate, 1),
+        }
+        print(f"  Token: {input_tok:,} in + {output_tok:,} out = {input_tok+output_tok:,}")
+        print(f"  Költség: ${koltseg_usd:.5f} ≈ {koltseg_huf:.1f} Ft")
+    else:
+        news_json["_token_usage"] = {}
+
+    # Automatikus bővítések
+    max_src = int(cfg.get("max_sources_sorok", "80"))
+    max_cat = int(cfg.get("max_categories_sorok", "80"))
+    max_top = int(cfg.get("max_topics_sorok", "25"))
+
+    if AUTO_FORRAS:
+        for item_src in news_json.get("new_sources", []):
+            if isinstance(item_src, dict):
+                url  = item_src.get("url","")
+                name = item_src.get("name", f"Auto – {tema_kulcs}")
+                reason = item_src.get("reason","")
+            elif isinstance(item_src, str) and item_src.startswith("http"):
+                url, name, reason = item_src, f"Auto – {tema_kulcs}", ""
+            else: continue
+            if url: auto_add_source(name, url, tema_kulcs, reason, max_src)
+
+    if AUTO_KAT:
+        for item_cat in news_json.get("new_categories", []):
+            if isinstance(item_cat, dict):
+                name   = item_cat.get("name","")
+                reason = item_cat.get("reason","")
+            elif isinstance(item_cat, str) and item_cat:
+                name, reason = item_cat, ""
+            else: continue
+            if name: auto_add_category(name, tema_kulcs, reason, max_cat)
+
+    if cfg.get("auto_tema_bővítés","igen") == "igen":
+        for item_top in news_json.get("new_topics", []):
+            if isinstance(item_top, dict):
+                kulcs  = item_top.get("kulcs","")
+                kw     = item_top.get("kulcsszavak",[])
+                kats   = item_top.get("kategoriak",[])
+                reason = item_top.get("reason","")
+                if kulcs: auto_add_topic(kulcs, kw, kats, reason, max_top)
+
+    news_json["_rss_stats"] = rss_stats
+    return news_json
+
+
 # ================================================================
 # KÖLTSÉGBECSLÉS ÉS KONTROLL
 # ================================================================

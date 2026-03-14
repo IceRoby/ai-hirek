@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Hírek – Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --border: #2a2a2a;
+  --border2: #333;
+  --text: #e8e8e8;
+  --muted: #888;
+  --muted2: #555;
+  --accent: #00ff88;
+  --accent2: #00cc6e;
+  --danger: #ff4444;
+  --warning: #ffaa00;
+  --info: #4488ff;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Instrument Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,136,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.logo {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-mark {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-mark::before {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: blink 2s ease infinite;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.logo-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  font-family: var(--mono);
+}
+
+nav { padding: 12px 8px; flex: 1; }
+
+.nav-section {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  padding: 12px 8px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active {
+  background: rgba(0,255,136,0.08);
+  color: var(--accent);
+  border-color: rgba(0,255,136,0.2);
+}
+.nav-icon {
+  width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+.repo-info {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted2);
+}
+.status-dot.connected { background: var(--accent); }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-title {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  text-decoration: none;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent2); color: #000; border-color: var(--accent2); }
+.btn-danger { border-color: var(--danger); color: var(--danger); }
+.btn-danger:hover { background: rgba(255,68,68,0.1); }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+
+/* ── CONTENT ── */
+.content {
+  padding: 24px;
+  flex: 1;
+}
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── DASHBOARD ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.workflow-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.workflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.workflow-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+.workflow-desc {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.run-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.run-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+.run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.run-icon { font-size: 16px; }
+
+/* ── FILE EDITOR ── */
+.file-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.file-tab {
+  padding: 8px 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+}
+.file-tab:hover { color: var(--text); }
+.file-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.editor-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.editor-filename {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.editor-filename::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--warning);
+  display: none;
+}
+.editor-filename.dirty::before { display: block; }
+
+textarea.code-editor {
+  width: 100%;
+  min-height: 500px;
+  background: var(--surface);
+  color: var(--text);
+  border: none;
+  outline: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.7;
+  padding: 16px;
+  resize: vertical;
+  tab-size: 2;
+}
+
+/* ── FORM EDITOR ── */
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.form-section-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.form-section-header:hover { background: var(--surface2); }
+.collapse-icon { color: var(--muted); transition: transform 0.2s; }
+.form-section-header.collapsed .collapse-icon { transform: rotate(-90deg); }
+.form-body { padding: 20px; }
+.form-body.collapsed { display: none; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+.form-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  padding-top: 8px;
+}
+.form-label-hint {
+  font-size: 10px;
+  color: var(--muted2);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+input[type="text"], input[type="number"], input[type="url"],
+select, textarea.form-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0,255,136,0.1);
+}
+select { cursor: pointer; }
+
+.tag-input-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 42px;
+  cursor: text;
+  transition: border-color 0.15s;
+}
+.tag-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0,255,136,0.1);
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,255,136,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+.tag-remove {
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 13px;
+  line-height: 1;
+}
+.tag-remove:hover { opacity: 1; color: var(--danger); }
+.tag-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  flex: 1;
+  min-width: 80px;
+  padding: 2px 4px;
+}
+
+/* ── HISTORY ── */
+.history-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.history-header {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.history-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.history-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+.badge-green { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid rgba(0,255,136,0.2); }
+.badge-red { background: rgba(255,68,68,0.1); color: var(--danger); border: 1px solid rgba(255,68,68,0.2); }
+.badge-yellow { background: rgba(255,170,0,0.1); color: var(--warning); border: 1px solid rgba(255,170,0,0.2); }
+
+.history-body { padding: 12px 16px; }
+.history-stat-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.history-stat {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.history-stat strong { color: var(--text); }
+
+/* ── AUTH OVERLAY ── */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 40px;
+  width: 380px;
+  animation: fadeIn 0.3s ease;
+}
+.auth-logo {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.auth-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.auth-sub {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+.auth-field { margin-bottom: 16px; }
+.auth-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.auth-field input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.auth-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,255,136,0.1); }
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+.auth-btn:hover { background: var(--accent2); }
+.auth-error {
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 12px;
+  display: none;
+  font-family: var(--mono);
+}
+
+/* ── ALERTS ── */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.2s ease;
+}
+.alert-success { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); color: var(--accent); }
+.alert-error { background: rgba(255,68,68,0.08); border: 1px solid rgba(255,68,68,0.2); color: var(--danger); }
+.alert-info { background: rgba(68,136,255,0.08); border: 1px solid rgba(68,136,255,0.2); color: var(--info); }
+
+/* ── TOPIC / CATEGORY LIST ── */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.list-item:hover { border-color: var(--border2); }
+.list-item-key {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 100px;
+}
+.list-item-desc {
+  font-size: 12px;
+  color: var(--muted);
+  flex: 1;
+}
+.list-item-actions { display: flex; gap: 6px; }
+
+.add-form {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 16px;
+  display: none;
+}
+.add-form.visible { display: block; animation: fadeIn 0.2s ease; }
+
+/* ── LOADING ── */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 13px;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 320px;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.success { border-color: rgba(0,255,136,0.3); color: var(--accent); }
+#toast.error { border-color: rgba(255,68,68,0.3); color: var(--danger); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Auth overlay -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-logo">◆ AI HÍREK ADMIN</div>
+    <div class="auth-title">Bejelentkezés</div>
+    <div class="auth-sub">Add meg a GitHub Personal Access Token-edet és a repó adatait a hírgyűjtő rendszer kezeléséhez.</div>
+    <div class="auth-field">
+      <label>GitHub Token</label>
+      <input type="password" id="authToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    </div>
+    <div class="auth-field">
+      <label>GitHub Felhasználónév</label>
+      <input type="text" id="authOwner" placeholder="pl. IceRoby">
+    </div>
+    <div class="auth-field">
+      <label>Repó neve</label>
+      <input type="text" id="authRepo" placeholder="pl. ai-hirek">
+    </div>
+    <button class="auth-btn" onclick="doLogin()">Bejelentkezés →</button>
+    <div class="auth-error" id="authError"></div>
+    <div style="margin-top:16px;font-size:11px;color:var(--muted);font-family:var(--mono);">
+      Token szükséges jogosultságok: repo (read+write)<br>
+      Létrehozás: github.com → Settings → Developer settings → Personal access tokens
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- App -->
+<div class="app" id="app" style="display:none">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">AI Hírek</div>
+      <div class="logo-sub">Admin felület</div>
+    </div>
+    <nav>
+      <div class="nav-section">Áttekintés</div>
+      <div class="nav-item active" onclick="showPanel('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPanel('run')">
+        <span class="nav-icon">▶</span> Futtatás
+      </div>
+      <div class="nav-section">Konfiguráció</div>
+      <div class="nav-item" onclick="showPanel('config')">
+        <span class="nav-icon">⚙</span> Beállítások
+      </div>
+      <div class="nav-item" onclick="showPanel('topics')">
+        <span class="nav-icon">◉</span> Témák
+      </div>
+      <div class="nav-item" onclick="showPanel('categories')">
+        <span class="nav-icon">◫</span> Kategóriák
+      </div>
+      <div class="nav-item" onclick="showPanel('sources')">
+        <span class="nav-icon">◎</span> Források
+      </div>
+      <div class="nav-item" onclick="showPanel('wordpress')">
+        <span class="nav-icon">⊞</span> WordPress
+      </div>
+      <div class="nav-section">Fájlok</div>
+      <div class="nav-item" onclick="showPanel('editor')">
+        <span class="nav-icon">⌨</span> Fájlszerkesztő
+      </div>
+      <div class="nav-section">Napló</div>
+      <div class="nav-item" onclick="showPanel('history')">
+        <span class="nav-icon">◷</span> Előzmények
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="repo-info">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="repoLabel">–</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <button class="btn" onclick="refreshAll()"><span class="spinner" id="refreshSpinner" style="display:none"></span> ↻ Frissítés</button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">Kilépés</button>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-label">Aktív témák</div>
+            <div class="stat-value" id="stat-temak">–</div>
+            <div class="stat-sub">config.txt</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">RSS feedek</div>
+            <div class="stat-value" id="stat-rss">–</div>
+            <div class="stat-sub">sources.txt</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Kategóriák</div>
+            <div class="stat-value" id="stat-cats">–</div>
+            <div class="stat-sub">categories.txt</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">WP oldalak</div>
+            <div class="stat-value" id="stat-wp">–</div>
+            <div class="stat-sub">wordpress.txt</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Utolsó futás</div>
+            <div class="stat-value" style="font-size:16px" id="stat-lastrun">–</div>
+            <div class="stat-sub" id="stat-lastcost">history.txt</div>
+          </div>
+        </div>
+        <div class="workflow-card">
+          <div class="workflow-header">
+            <div>
+              <div class="workflow-title">Hírgyűjtés indítása</div>
+              <div class="workflow-desc">Manuálisan elindítja a GitHub Actions workflow-t</div>
+            </div>
+            <button class="run-btn" id="runBtn" onclick="triggerWorkflow()">
+              <span class="run-icon">▶</span> Futtatás most
+            </button>
+          </div>
+          <div id="runStatus"></div>
+        </div>
+        <div class="workflow-card">
+          <div style="font-weight:600;margin-bottom:12px">Gyorslinkek</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn" id="ghPagesLink" href="#" target="_blank">◈ GitHub Pages megtekintése</a>
+            <a class="btn" href="https://console.anthropic.com" target="_blank">◎ Anthropic Console</a>
+            <a class="btn" id="repoLink" href="#" target="_blank">⊞ GitHub Repó</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RUN -->
+      <div class="panel" id="panel-run">
+        <div class="workflow-card">
+          <div class="workflow-header">
+            <div>
+              <div class="workflow-title">Workflow futtatása</div>
+              <div class="workflow-desc">Kézzel indítja el a hírgyűjtést</div>
+            </div>
+            <button class="run-btn" onclick="triggerWorkflow()">
+              <span class="run-icon">▶</span> Futtatás most
+            </button>
+          </div>
+          <div id="runStatus2"></div>
+        </div>
+        <div class="workflow-card">
+          <div style="font-weight:600;margin-bottom:12px;font-size:13px;">Ütemezés módosítása</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:16px;">Az ütemezés a <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-family:var(--mono)">.github/workflows/daily-news.yml</code> fájlban van. Módosítsd a fájlszerkesztőben.</p>
+          <button class="btn" onclick="showPanel('editor');loadFile('daily-news.yml')">⌨ Fájlszerkesztő megnyitása</button>
+        </div>
+      </div>
+
+      <!-- CONFIG -->
+      <div class="panel" id="panel-config">
+        <div id="configAlerts"></div>
+        <div class="form-section">
+          <div class="form-section-header" onclick="toggleSection(this)">
+            Alapbeállítások <span class="collapse-icon">▾</span>
+          </div>
+          <div class="form-body" id="configFormBody">
+            <div style="color:var(--muted);font-size:12px;margin-bottom:16px;">Betöltés...</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" onclick="saveConfig()">💾 Mentés</button>
+          <button class="btn" onclick="loadPanel('config')">↺ Visszaállítás</button>
+        </div>
+      </div>
+
+      <!-- TOPICS -->
+      <div class="panel" id="panel-topics">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-weight:600">Témák kezelése</div>
+          <button class="btn btn-primary btn-sm" onclick="toggleAddTopic()">+ Új téma</button>
+        </div>
+        <div id="topicsList"></div>
+        <div class="add-form" id="addTopicForm">
+          <div style="font-weight:600;margin-bottom:16px;font-size:13px">Új téma hozzáadása</div>
+          <div class="form-row">
+            <div class="form-label">Téma kulcs<div class="form-label-hint">Rövid, ékezet nélkül<br>(pl: cybersecurity)</div></div>
+            <input type="text" id="newTopicKey" placeholder="pl: cybersecurity">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Kulcsszavak<div class="form-label-hint">Vesszővel elválasztva</div></div>
+            <input type="text" id="newTopicKw" placeholder="keyword1, keyword2, keyword3">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Kizárt szavak<div class="form-label-hint">Opcionális</div></div>
+            <input type="text" id="newTopicExcl" placeholder="pl: spam, ads">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Leírás</div>
+            <input type="text" id="newTopicDesc" placeholder="Magyar leírás">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-primary btn-sm" onclick="addTopic()">Hozzáadás</button>
+            <button class="btn btn-sm" onclick="toggleAddTopic()">Mégse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="panel" id="panel-categories">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-weight:600">Kategóriák kezelése</div>
+          <button class="btn btn-primary btn-sm" onclick="toggleAddCat()">+ Új kategória</button>
+        </div>
+        <div id="catsList"></div>
+        <div class="add-form" id="addCatForm">
+          <div style="font-weight:600;margin-bottom:16px;font-size:13px">Új kategória hozzáadása</div>
+          <div class="form-row">
+            <div class="form-label">Kategória neve</div>
+            <input type="text" id="newCatName" placeholder="pl: Kvantum számítástechnika">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Témához<div class="form-label-hint">Melyik témába tartozik</div></div>
+            <input type="text" id="newCatTema" placeholder="pl: ai">
+          </div>
+          <div class="form-row">
+            <div class="form-label">WP oldalak<div class="form-label-hint">mind / wp1,wp2 / üres</div></div>
+            <input type="text" id="newCatWp" placeholder="mind">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-primary btn-sm" onclick="addCategory()">Hozzáadás</button>
+            <button class="btn btn-sm" onclick="toggleAddCat()">Mégse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOURCES -->
+      <div class="panel" id="panel-sources">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-weight:600">RSS feedek és domainek</div>
+          <button class="btn btn-primary btn-sm" onclick="toggleAddSource()">+ Új forrás</button>
+        </div>
+        <div id="sourcesList"></div>
+        <div class="add-form" id="addSourceForm">
+          <div style="font-weight:600;margin-bottom:16px;font-size:13px">Új forrás hozzáadása</div>
+          <div class="form-row">
+            <div class="form-label">Típus</div>
+            <select id="newSourceType">
+              <option value="rss">RSS Feed</option>
+              <option value="domain">Domain (kereséshez)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">Forrás neve</div>
+            <input type="text" id="newSourceName" placeholder="pl: TechCrunch AI">
+          </div>
+          <div class="form-row">
+            <div class="form-label">URL / Domain</div>
+            <input type="url" id="newSourceUrl" placeholder="https://techcrunch.com/feed/">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-primary btn-sm" onclick="addSource()">Hozzáadás</button>
+            <button class="btn btn-sm" onclick="toggleAddSource()">Mégse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORDPRESS -->
+      <div class="panel" id="panel-wordpress">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-weight:600">WordPress oldalak</div>
+          <button class="btn btn-primary btn-sm" onclick="toggleAddWp()">+ Új WP oldal</button>
+        </div>
+        <div id="wpList"></div>
+        <div class="add-form" id="addWpForm">
+          <div style="font-weight:600;margin-bottom:16px;font-size:13px">Új WordPress oldal</div>
+          <div class="form-row">
+            <div class="form-label">URL</div>
+            <input type="url" id="newWpUrl" placeholder="https://oldalad.hu">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Felhasználónév</div>
+            <input type="text" id="newWpUser" placeholder="admin">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Típus<div class="form-label-hint">altalanos / tema:ai / kategoriak:Kat1</div></div>
+            <input type="text" id="newWpTipus" placeholder="altalanos">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Post mód</div>
+            <select id="newWpMode">
+              <option value="summary">summary – 1 összefoglaló post</option>
+              <option value="individual">individual – minden hír külön</option>
+              <option value="append">append – hozzáfűz naponta</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">Post státusz</div>
+            <select id="newWpStatus">
+              <option value="publish">publish – azonnal publikál</option>
+              <option value="draft">draft – vázlat</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">Kategória neve</div>
+            <input type="text" id="newWpKat" placeholder="pl: AI Hírek">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Fix kép URL<div class="form-label-hint">Opcionális</div></div>
+            <input type="url" id="newWpKepUrl" placeholder="https://...">
+          </div>
+          <div class="form-row">
+            <div class="form-label">Kép kulcsszó<div class="form-label-hint">Pexels/Unsplash kereséshez</div></div>
+            <input type="text" id="newWpKepKw" placeholder="artificial intelligence">
+          </div>
+          <div style="margin-top:8px;padding:10px;background:rgba(255,170,0,0.05);border:1px solid rgba(255,170,0,0.2);border-radius:6px;font-size:11px;color:var(--warning);font-family:var(--mono);">
+            ⚠️ Az App Password-öt GitHub Secrets-ben tárold (WP1_APP_PASSWORD, WP2_APP_PASSWORD...)
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="btn btn-primary btn-sm" onclick="addWpSite()">Hozzáadás</button>
+            <button class="btn btn-sm" onclick="toggleAddWp()">Mégse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILE EDITOR -->
+      <div class="panel" id="panel-editor">
+        <div class="file-tabs" id="fileTabs">
+          <div class="file-tab active" onclick="loadFile('config.txt', this)">config.txt</div>
+          <div class="file-tab" onclick="loadFile('topics.txt', this)">topics.txt</div>
+          <div class="file-tab" onclick="loadFile('categories.txt', this)">categories.txt</div>
+          <div class="file-tab" onclick="loadFile('sources.txt', this)">sources.txt</div>
+          <div class="file-tab" onclick="loadFile('wordpress.txt', this)">wordpress.txt</div>
+          <div class="file-tab" onclick="loadFile('.github/workflows/daily-news.yml', this)">daily-news.yml</div>
+        </div>
+        <div class="editor-wrap">
+          <div class="editor-header">
+            <div class="editor-filename" id="editorFilename">config.txt</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm" onclick="loadFile(currentFile)">↺ Visszaállítás</button>
+              <button class="btn btn-primary btn-sm" onclick="saveCurrentFile()">💾 Mentés</button>
+            </div>
+          </div>
+          <textarea class="code-editor" id="codeEditor" onInput="markDirty()" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="panel" id="panel-history">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-weight:600">Futási előzmények</div>
+          <button class="btn btn-sm" onclick="loadPanel('history')">↻ Frissítés</button>
+        </div>
+        <div id="historyList"></div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /app -->
+
+<script>
+// ── STATE ──
+let TOKEN = '', OWNER = '', REPO = '';
+let currentFile = 'config.txt';
+let fileContents = {};
+let isDirty = false;
+
+// ── AUTH ──
+function doLogin() {
+  TOKEN = document.getElementById('authToken').value.trim();
+  OWNER = document.getElementById('authOwner').value.trim();
+  REPO  = document.getElementById('authRepo').value.trim();
+  if (!TOKEN || !OWNER || !REPO) {
+    showAuthError('Minden mező kitöltése kötelező!');
+    return;
+  }
+  // Verify token
+  ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}`)
+    .then(data => {
+      if (data.id) {
+        localStorage.setItem('gh_token', TOKEN);
+        localStorage.setItem('gh_owner', OWNER);
+        localStorage.setItem('gh_repo', REPO);
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        document.getElementById('repoLabel').textContent = `${OWNER}/${REPO}`;
+        document.getElementById('statusDot').classList.add('connected');
+        document.getElementById('repoLink').href = `https://github.com/${OWNER}/${REPO}`;
+        document.getElementById('ghPagesLink').href = `https://${OWNER}.github.io/${REPO}`;
+        refreshAll();
+      } else {
+        showAuthError('Érvénytelen token vagy repó!');
+      }
+    })
+    .catch(() => showAuthError('Kapcsolódási hiba! Ellenőrizd a token jogosultságait.'));
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function doLogout() {
+  localStorage.clear();
+  location.reload();
+}
+
+// ── GITHUB API ──
+async function ghFetch(url, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  return res.json();
+}
+
+async function getFile(path) {
+  const data = await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`);
+  if (data.content) {
+    return {
+      content: atob(data.content.replace(/\n/g, '')),
+      sha: data.sha
+    };
+  }
+  return null;
+}
+
+async function putFile(path, content, message) {
+  const existing = await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`);
+  const sha = existing.sha;
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  return ghFetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,
+    'PUT',
+    { message, content: encoded, sha }
+  );
+}
+
+// ── NAVIGATION ──
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.toLowerCase().includes(name.substring(0,4))) n.classList.add('active');
+  });
+  const titles = {
+    dashboard: 'Dashboard', run: 'Futtatás', config: 'Beállítások',
+    topics: 'Témák', categories: 'Kategóriák', sources: 'Források',
+    wordpress: 'WordPress', editor: 'Fájlszerkesztő', history: 'Előzmények'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+  loadPanel(name);
+}
+
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const body = header.nextElementSibling;
+  body.classList.toggle('collapsed');
+}
+
+// ── REFRESH ──
+async function refreshAll() {
+  const spinner = document.getElementById('refreshSpinner');
+  spinner.style.display = 'inline-block';
+  try {
+    await loadDashboard();
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+async function loadPanel(name) {
+  if (name === 'dashboard') await loadDashboard();
+  else if (name === 'config')     await loadConfigForm();
+  else if (name === 'topics')     await loadTopics();
+  else if (name === 'categories') await loadCategories();
+  else if (name === 'sources')    await loadSources();
+  else if (name === 'wordpress')  await loadWordpress();
+  else if (name === 'editor')     await loadFile(currentFile);
+  else if (name === 'history')    await loadHistory();
+}
+
+// ── DASHBOARD ──
+async function loadDashboard() {
+  try {
+    const [configF, sourcesF, catsF, wpF, histF] = await Promise.all([
+      getFile('config.txt'), getFile('sources.txt'),
+      getFile('categories.txt'), getFile('wordpress.txt'),
+      getFile('history.txt')
+    ]);
+
+    if (configF) {
+      const temak = (configF.content.match(/config \| aktiv_temak \| (.+)/)?.[1] || '').split(',').filter(t=>t.trim()).length;
+      document.getElementById('stat-temak').textContent = temak;
+    }
+    if (sourcesF) {
+      const rss = (sourcesF.content.match(/^rss \|/gm) || []).length;
+      document.getElementById('stat-rss').textContent = rss;
+    }
+    if (catsF) {
+      const cats = (catsF.content.match(/^category \|/gm) || []).length;
+      document.getElementById('stat-cats').textContent = cats;
+    }
+    if (wpF) {
+      const wps = new Set((wpF.content.match(/^wp \| wp\d+_url/gm) || []).map(l => l.match(/wp(\d+)/)?.[1])).size;
+      document.getElementById('stat-wp').textContent = wps || 0;
+    }
+    if (histF) {
+      const lastRun = histF.content.match(/UTOLSO_FUTES: (.+)/)?.[1] || '–';
+      const lastCost = histF.content.match(/Költség: (.+)/)?.[1] || '';
+      document.getElementById('stat-lastrun').textContent = lastRun;
+      document.getElementById('stat-lastcost').textContent = lastCost || 'history.txt';
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// ── TRIGGER WORKFLOW ──
+async function triggerWorkflow() {
+  const btn = document.getElementById('runBtn');
+  if (btn) btn.disabled = true;
+
+  const statusEl = document.getElementById('runStatus') || document.getElementById('runStatus2');
+  statusEl.innerHTML = '<div class="alert alert-info"><span class="spinner"></span> Workflow indítása...</div>';
+
+  try {
+    const res = await ghFetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/daily-news.yml/dispatches`,
+      'POST', { ref: 'main' }
+    );
+    statusEl.innerHTML = '<div class="alert alert-success">✓ Workflow sikeresen elindítva! Hamarosan fut...</div>';
+    showToast('Workflow elindítva!', 'success');
+  } catch(e) {
+    statusEl.innerHTML = '<div class="alert alert-error">✗ Hiba a workflow indításakor!</div>';
+    showToast('Hiba!', 'error');
+  } finally {
+    if (btn) {
+      setTimeout(() => { btn.disabled = false; }, 5000);
+    }
+  }
+}
+
+// ── CONFIG FORM ──
+async function loadConfigForm() {
+  const f = await getFile('config.txt');
+  if (!f) return;
+  fileContents['config.txt'] = f;
+
+  const lines = f.content.split('\n');
+  const vals = {};
+  lines.forEach(l => {
+    const m = l.match(/^config \| (\S+) \| (.+)/);
+    if (m) vals[m[1]] = m[2].trim();
+  });
+
+  const fields = [
+    { key: 'aktiv_temak',          label: 'Aktív témák',        hint: 'Vesszővel elválasztva (pl: ai, coaching)', type: 'text' },
+    { key: 'modell',               label: 'AI modell',           hint: '', type: 'select',
+      options: ['claude-haiku-4-5-20251001','claude-sonnet-4-6','claude-opus-4-5'] },
+    { key: 'hirek_szama',          label: 'Hírek száma',         hint: 'pl: 20-25', type: 'text' },
+    { key: 'idoablak_nap',         label: 'Időablak (nap)',      hint: '7 = egy hét', type: 'number' },
+    { key: 'nyelv',                label: 'Nyelv',               hint: '', type: 'select',
+      options: ['magyar','angol','magyar+angol'] },
+    { key: 'fokusz_regiok',        label: 'Fókusz régiók',       hint: 'pl: globális, magyar', type: 'text' },
+    { key: 'max_koltseg_per_futes',label: 'Max költség/futás $', hint: '0 = nincs korlát', type: 'number' },
+    { key: 'havai_limit',          label: 'Havi limit $',        hint: '0 = nincs korlát', type: 'number' },
+    { key: 'auto_forras_bővítés',  label: 'Auto forrás bővítés', hint: '', type: 'select', options: ['igen','nem'] },
+    { key: 'auto_kategoria_bővítés',label:'Auto kategória bővítés',hint:'',type:'select',options:['igen','nem'] },
+    { key: 'max_sources_sorok',    label: 'Max sources sorok',   hint: '0 = korlátlan', type: 'number' },
+    { key: 'max_topics_sorok',     label: 'Max topics sorok',    hint: '0 = korlátlan', type: 'number' },
+    { key: 'max_categories_sorok', label: 'Max categories sorok',hint: '0 = korlátlan', type: 'number' },
+  ];
+
+  let html = '';
+  fields.forEach(f => {
+    const val = vals[f.key] || '';
+    html += `<div class="form-row">
+      <div class="form-label">${f.label}<div class="form-label-hint">${f.hint}</div></div>
+      <div>`;
+    if (f.type === 'select') {
+      html += `<select id="cfg_${f.key}">`;
+      f.options.forEach(o => html += `<option value="${o}" ${val===o?'selected':''}>${o}</option>`);
+      html += `</select>`;
+    } else {
+      html += `<input type="${f.type}" id="cfg_${f.key}" value="${val}">`;
+    }
+    html += `</div></div>`;
+  });
+
+  document.getElementById('configFormBody').innerHTML = html;
+}
+
+async function saveConfig() {
+  const f = fileContents['config.txt'];
+  if (!f) return;
+
+  let content = f.content;
+  const keys = ['aktiv_temak','modell','hirek_szama','idoablak_nap','nyelv','fokusz_regiok',
+                 'max_koltseg_per_futes','havai_limit','auto_forras_bővítés','auto_kategoria_bővítés',
+                 'max_sources_sorok','max_topics_sorok','max_categories_sorok'];
+
+  keys.forEach(key => {
+    const el = document.getElementById('cfg_' + key);
+    if (!el) return;
+    const val = el.value.trim();
+    const regex = new RegExp(`^(config \\| ${key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')} \\| ).+$`, 'm');
+    if (regex.test(content)) {
+      content = content.replace(regex, `$1${val}`);
+    } else {
+      content += `\nconfig | ${key} | ${val}`;
+    }
+  });
+
+  try {
+    await putFile('config.txt', content, '⚙️ config.txt frissítve – Admin felület');
+    fileContents['config.txt'] = { ...f, content };
+    showToast('config.txt mentve!', 'success');
+  } catch(e) {
+    showToast('Mentési hiba!', 'error');
+  }
+}
+
+// ── TOPICS ──
+async function loadTopics() {
+  const f = await getFile('topics.txt');
+  if (!f) return;
+  fileContents['topics.txt'] = f;
+
+  const topics = [];
+  f.content.split('\n').forEach(l => {
+    const m = l.match(/^topic \| (\S+) \| ([^|]*)\| ([^|]*)\| (.+)/);
+    if (m) topics.push({ key:m[1], kw:m[2].trim(), excl:m[3].trim(), desc:m[4].trim() });
+    // auto sorok
+    const a = l.match(/^#auto topic \| (\S+) \| ([^|]*)\| ([^|]*)\| (.+)/);
+    if (a) topics.push({ key:a[1], kw:a[2].trim(), excl:a[3].trim(), desc:a[4].trim(), auto:true });
+  });
+
+  let html = '';
+  if (topics.length === 0) {
+    html = '<div style="color:var(--muted);font-size:13px;">Nincsenek témák</div>';
+  }
+  topics.forEach((t, i) => {
+    html += `<div class="list-item">
+      <div class="list-item-key">${t.key}${t.auto ? ' <span class="badge badge-yellow">#auto</span>' : ''}</div>
+      <div class="list-item-desc">${t.desc || ''}<br><span style="color:var(--muted2);font-size:11px;font-family:var(--mono)">${t.kw}</span></div>
+      <div class="list-item-actions">
+        ${t.auto ? `<button class="btn btn-sm" onclick="activateTopic(${i})">✓ Aktivál</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deleteTopic('${t.key}', ${t.auto})">✕</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('topicsList').innerHTML = html;
+}
+
+function toggleAddTopic() {
+  document.getElementById('addTopicForm').classList.toggle('visible');
+}
+
+async function addTopic() {
+  const key  = document.getElementById('newTopicKey').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const kw   = document.getElementById('newTopicKw').value.trim();
+  const excl = document.getElementById('newTopicExcl').value.trim();
+  const desc = document.getElementById('newTopicDesc').value.trim();
+  if (!key || !kw) { showToast('Kulcs és kulcsszavak kötelező!', 'error'); return; }
+
+  const f = fileContents['topics.txt'];
+  const newLine = `\ntopic | ${key} | ${kw} | ${excl} | ${desc}`;
+  const content = f.content + newLine;
+
+  try {
+    await putFile('topics.txt', content, `◉ Új téma: ${key}`);
+    showToast(`Téma hozzáadva: ${key}`, 'success');
+    toggleAddTopic();
+    await loadTopics();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+async function deleteTopic(key, isAuto) {
+  if (!confirm(`Törlöd a(z) "${key}" témát?`)) return;
+  const f = fileContents['topics.txt'];
+  const pattern = isAuto
+    ? new RegExp(`\\n?#auto topic \\| ${key} \\|[^\n]*`, 'g')
+    : new RegExp(`\\n?topic \\| ${key} \\|[^\n]*`, 'g');
+  const content = f.content.replace(pattern, '');
+  try {
+    await putFile('topics.txt', content, `◉ Téma törölve: ${key}`);
+    showToast(`Törölve: ${key}`, 'success');
+    await loadTopics();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+// ── CATEGORIES ──
+async function loadCategories() {
+  const f = await getFile('categories.txt');
+  if (!f) return;
+  fileContents['categories.txt'] = f;
+
+  const cats = [];
+  f.content.split('\n').forEach(l => {
+    const m = l.match(/^category \| ([^|]+)\| ([^|]+)\| (.+)/);
+    if (m) cats.push({ name:m[1].trim(), tema:m[2].trim(), wp:m[3].trim() });
+    const a = l.match(/^#auto category \| ([^|]+)\| ([^|]+)\| (.+)/);
+    if (a) cats.push({ name:a[1].trim(), tema:a[2].trim(), wp:a[3].trim(), auto:true });
+  });
+
+  // Group by tema
+  const groups = {};
+  cats.forEach(c => {
+    if (!groups[c.tema]) groups[c.tema] = [];
+    groups[c.tema].push(c);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([tema, items]) => {
+    html += `<div style="margin-bottom:16px">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">${tema}</div>`;
+    items.forEach(c => {
+      html += `<div class="list-item">
+        <div class="list-item-key" style="font-size:13px">${c.name}${c.auto?' <span class="badge badge-yellow">#auto</span>':''}</div>
+        <div class="list-item-desc" style="font-family:var(--mono);font-size:11px">${c.wp}</div>
+        <div class="list-item-actions">
+          <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.name}', ${!!c.auto})">✕</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('catsList').innerHTML = html || '<div style="color:var(--muted)">Nincsenek kategóriák</div>';
+}
+
+function toggleAddCat() { document.getElementById('addCatForm').classList.toggle('visible'); }
+
+async function addCategory() {
+  const name = document.getElementById('newCatName').value.trim();
+  const tema = document.getElementById('newCatTema').value.trim() || 'altalanos';
+  const wp   = document.getElementById('newCatWp').value.trim() || 'mind';
+  if (!name) { showToast('Kategória neve kötelező!', 'error'); return; }
+  const f = fileContents['categories.txt'];
+  const newLine = `\ncategory | ${name} | ${tema} | ${wp}`;
+  try {
+    await putFile('categories.txt', f.content + newLine, `◫ Új kategória: ${name}`);
+    showToast(`Kategória hozzáadva: ${name}`, 'success');
+    toggleAddCat();
+    await loadCategories();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+async function deleteCategory(name, isAuto) {
+  if (!confirm(`Törlöd: "${name}"?`)) return;
+  const f = fileContents['categories.txt'];
+  const pattern = isAuto
+    ? new RegExp(`\\n?#auto category \\| ${name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')} \\|[^\n]*`, 'g')
+    : new RegExp(`\\n?category \\| ${name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')} \\|[^\n]*`, 'g');
+  const content = f.content.replace(pattern, '');
+  try {
+    await putFile('categories.txt', content, `◫ Kategória törölve: ${name}`);
+    showToast(`Törölve: ${name}`, 'success');
+    await loadCategories();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+// ── SOURCES ──
+async function loadSources() {
+  const f = await getFile('sources.txt');
+  if (!f) return;
+  fileContents['sources.txt'] = f;
+
+  const items = [];
+  f.content.split('\n').forEach(l => {
+    const m = l.match(/^(rss|domain) \| ([^|]+)\| (.+)/);
+    if (m) items.push({ type:m[1], name:m[2].trim(), url:m[3].trim() });
+    const a = l.match(/^#auto \| (rss|domain) \| ([^|]+)\| (.+)/);
+    if (a) items.push({ type:a[1], name:a[2].trim(), url:a[3].trim(), auto:true });
+  });
+
+  let html = '';
+  items.forEach(it => {
+    const badge = it.type === 'rss'
+      ? '<span class="badge badge-green">RSS</span>'
+      : '<span class="badge" style="background:rgba(68,136,255,0.1);color:var(--info);border:1px solid rgba(68,136,255,0.2)">domain</span>';
+    html += `<div class="list-item">
+      ${badge}
+      <div class="list-item-key" style="font-size:12px">${it.name}${it.auto?' <span class="badge badge-yellow">#auto</span>':''}</div>
+      <div class="list-item-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted2)">${it.url}</div>
+      <div class="list-item-actions">
+        <button class="btn btn-danger btn-sm" onclick="deleteSource('${it.name}', '${it.type}', ${!!it.auto})">✕</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('sourcesList').innerHTML = html || '<div style="color:var(--muted)">Nincsenek források</div>';
+}
+
+function toggleAddSource() { document.getElementById('addSourceForm').classList.toggle('visible'); }
+
+async function addSource() {
+  const type = document.getElementById('newSourceType').value;
+  const name = document.getElementById('newSourceName').value.trim();
+  const url  = document.getElementById('newSourceUrl').value.trim();
+  if (!name || !url) { showToast('Név és URL kötelező!', 'error'); return; }
+  const f = fileContents['sources.txt'];
+  const newLine = `\n${type} | ${name} | ${url}`;
+  try {
+    await putFile('sources.txt', f.content + newLine, `◎ Új forrás: ${name}`);
+    showToast(`Forrás hozzáadva: ${name}`, 'success');
+    toggleAddSource();
+    await loadSources();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+async function deleteSource(name, type, isAuto) {
+  if (!confirm(`Törlöd: "${name}"?`)) return;
+  const f = fileContents['sources.txt'];
+  const prefix = isAuto ? '#auto \\| ' : '';
+  const pattern = new RegExp(`\\n?${prefix}${type} \\| ${name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')} \\|[^\n]*`, 'g');
+  const content = f.content.replace(pattern, '');
+  try {
+    await putFile('sources.txt', content, `◎ Forrás törölve: ${name}`);
+    showToast(`Törölve: ${name}`, 'success');
+    await loadSources();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+// ── WORDPRESS ──
+async function loadWordpress() {
+  const f = await getFile('wordpress.txt');
+  if (!f) return;
+  fileContents['wordpress.txt'] = f;
+
+  const sites = {};
+  f.content.split('\n').forEach(l => {
+    const m = l.match(/^wp \| wp(\d+)_(\w+) \| (.+)/);
+    if (m) {
+      const idx = m[1], key = m[2], val = m[3].trim();
+      if (!sites[idx]) sites[idx] = { idx };
+      sites[idx][key] = val;
+    }
+  });
+
+  let html = '';
+  Object.values(sites).forEach(s => {
+    html += `<div class="form-section">
+      <div class="form-section-header" onclick="toggleSection(this)">
+        WP${s.idx} – ${s.url || '(nincs URL)'} <span class="collapse-icon">▾</span>
+      </div>
+      <div class="form-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+          <div><span style="color:var(--muted);font-family:var(--mono)">Típus:</span> ${s.tipus||'–'}</div>
+          <div><span style="color:var(--muted);font-family:var(--mono)">Mód:</span> ${s.post_mode||'–'}</div>
+          <div><span style="color:var(--muted);font-family:var(--mono)">Státusz:</span> ${s.post_status||'–'}</div>
+          <div><span style="color:var(--muted);font-family:var(--mono)">Kategória:</span> ${s.kategoria||'–'}</div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn btn-danger btn-sm" onclick="deleteWpSite('${s.idx}')">✕ Törlés</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  if (!Object.keys(sites).length) html = '<div style="color:var(--muted)">Nincsenek WP oldalak beállítva</div>';
+  document.getElementById('wpList').innerHTML = html;
+}
+
+function toggleAddWp() { document.getElementById('addWpForm').classList.toggle('visible'); }
+
+async function addWpSite() {
+  const f = fileContents['wordpress.txt'];
+  // Find next index
+  const idxs = (f.content.match(/^wp \| wp(\d+)_url/gm) || []).map(l => parseInt(l.match(/wp(\d+)/)[1]));
+  const nextIdx = idxs.length ? Math.max(...idxs) + 1 : 1;
+
+  const url    = document.getElementById('newWpUrl').value.trim();
+  const user   = document.getElementById('newWpUser').value.trim();
+  const tipus  = document.getElementById('newWpTipus').value.trim() || 'altalanos';
+  const mode   = document.getElementById('newWpMode').value;
+  const status = document.getElementById('newWpStatus').value;
+  const kat    = document.getElementById('newWpKat').value.trim();
+  const kepUrl = document.getElementById('newWpKepUrl').value.trim();
+  const kepKw  = document.getElementById('newWpKepKw').value.trim();
+
+  if (!url || !user) { showToast('URL és felhasználónév kötelező!', 'error'); return; }
+
+  let block = `\n\n# WP${nextIdx}\n`;
+  block += `wp | wp${nextIdx}_url | ${url}\n`;
+  block += `wp | wp${nextIdx}_user | ${user}\n`;
+  block += `wp | wp${nextIdx}_tipus | ${tipus}\n`;
+  block += `wp | wp${nextIdx}_post_status | ${status}\n`;
+  block += `wp | wp${nextIdx}_post_mode | ${mode}\n`;
+  if (kat)    block += `wp | wp${nextIdx}_kategoria | ${kat}\n`;
+  if (kepUrl) block += `wp | wp${nextIdx}_kep_url | ${kepUrl}\n`;
+  if (kepKw)  block += `wp | wp${nextIdx}_kep_kulcsszo | ${kepKw}\n`;
+
+  try {
+    await putFile('wordpress.txt', f.content + block, `⊞ WP${nextIdx} hozzáadva: ${url}`);
+    showToast(`WP${nextIdx} hozzáadva!`, 'success');
+    toggleAddWp();
+    await loadWordpress();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+async function deleteWpSite(idx) {
+  if (!confirm(`Törlöd a WP${idx} oldalt?`)) return;
+  const f = fileContents['wordpress.txt'];
+  const pattern = new RegExp(`\\n?# WP${idx}\\n(wp \\| wp${idx}_[^\n]+\\n?)*`, 'g');
+  const content = f.content.replace(pattern, '');
+  try {
+    await putFile('wordpress.txt', content, `⊞ WP${idx} törölve`);
+    showToast(`WP${idx} törölve`, 'success');
+    await loadWordpress();
+  } catch(e) { showToast('Hiba!', 'error'); }
+}
+
+// ── FILE EDITOR ──
+async function loadFile(path, tabEl) {
+  currentFile = path;
+  document.getElementById('editorFilename').textContent = path;
+  document.getElementById('editorFilename').classList.remove('dirty');
+  isDirty = false;
+
+  if (tabEl) {
+    document.querySelectorAll('.file-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+
+  const f = await getFile(path);
+  if (f) {
+    document.getElementById('codeEditor').value = f.content;
+    fileContents[path] = f;
+  }
+}
+
+function markDirty() {
+  isDirty = true;
+  document.getElementById('editorFilename').classList.add('dirty');
+}
+
+async function saveCurrentFile() {
+  const content = document.getElementById('codeEditor').value;
+  try {
+    await putFile(currentFile, content, `⌨ ${currentFile} szerkesztve – Admin`);
+    fileContents[currentFile] = { ...fileContents[currentFile], content };
+    isDirty = false;
+    document.getElementById('editorFilename').classList.remove('dirty');
+    showToast(`${currentFile} mentve!`, 'success');
+  } catch(e) { showToast('Mentési hiba!', 'error'); }
+}
+
+// ── HISTORY ──
+async function loadHistory() {
+  const f = await getFile('history.txt');
+  if (!f) return;
+
+  const entries = f.content.split('--- FUTÁS:').slice(1);
+  if (!entries.length) {
+    document.getElementById('historyList').innerHTML = '<div style="color:var(--muted)">Még nincs futási előzmény.</div>';
+    return;
+  }
+
+  let html = '';
+  entries.reverse().forEach(e => {
+    const dateM  = e.match(/^(.+?) ---/);
+    const hirM   = e.match(/Hírek: (\d+)/);
+    const costM  = e.match(/Költség: (.+)/);
+    const modM   = e.match(/Modell: ([^\s|]+)/);
+    const temakM = e.match(/Témák: ([^|]+)/);
+
+    const date   = dateM?.[1]?.trim() || '?';
+    const hirek  = hirM?.[1] || '?';
+    const cost   = costM?.[1] || '';
+    const modell = modM?.[1] || '?';
+    const temak  = temakM?.[1]?.trim() || '?';
+
+    html += `<div class="history-entry">
+      <div class="history-header">
+        <div class="history-date">${date}</div>
+        <span class="badge badge-green">✓ OK</span>
+      </div>
+      <div class="history-body">
+        <div class="history-stat-row">
+          <div class="history-stat">Témák: <strong>${temak}</strong></div>
+          <div class="history-stat">Hírek: <strong>${hirek}</strong></div>
+          <div class="history-stat">Modell: <strong>${modell}</strong></div>
+          ${cost ? `<div class="history-stat">Költség: <strong style="color:var(--accent)">${cost}</strong></div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('historyList').innerHTML = html;
+}
+
+// ── TOAST ──
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type === 'success' ? '✓ ' : '✗ ') + msg;
+  t.className = `show ${type}`;
+  setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ── INIT ──
+const savedToken = localStorage.getItem('gh_token');
+const savedOwner = localStorage.getItem('gh_owner');
+const savedRepo  = localStorage.getItem('gh_repo');
+
+if (savedToken && savedOwner && savedRepo) {
+  TOKEN = savedToken; OWNER = savedOwner; REPO = savedRepo;
+  document.getElementById('authOverlay').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('repoLabel').textContent = `${OWNER}/${REPO}`;
+  document.getElementById('statusDot').classList.add('connected');
+  document.getElementById('repoLink').href = `https://github.com/${OWNER}/${REPO}`;
+  document.getElementById('ghPagesLink').href = `https://${OWNER}.github.io/${REPO}`;
+  refreshAll();
+} else {
+  document.getElementById('authToken').value = '';
+  document.getElementById('authOwner').value = savedOwner || '';
+  document.getElementById('authRepo').value  = savedRepo  || '';
+}
+</script>
+</body>
+</html>

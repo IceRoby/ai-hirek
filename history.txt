@@ -2,11 +2,38 @@ UTOLSO_FUTES: 2026. 03. 14.
 # Futási előzmények (utolsó 10 futás)
 # =======================================================
 
+--- FUTÁS:# Futási előzmények (utolsó 10 futás)
+# =======================================================
+
 --- FUTÁS:# AI Hírek futási előzmények - automatikusan frissül
 
 --- FUTÁS: 2026. 03. 14. 16:59:21 (Budapest) ---
 Témák: ai | Modell: claude-haiku-4-5-20251001 | Hírek: 25
 Költség: $0.05505 ≈ 18.8 Ft | Token: 182,842
+  The Verge AI                             OK    8
+  TechCrunch                               OK    0
+  Ars Technica                             OK    0
+  Wired AI                                 OK    0
+  VentureBeat AI                           OK    0
+  MIT Tech Review AI                       OK    0
+  The Guardian AI                          OK    0
+  ScienceDaily AI                          OK    0
+  Unite.AI                                 HIBA  syntax error: line 1, column 0
+  DailyAI                                  OK    0
+  Google News AI EN                        OK    0
+  Google News OpenAI                       OK    0
+  Google News Anthropic                    OK    0
+  Google News Google AI                    OK    0
+  Google News Meta AI                      OK    0
+  Google News Magyar AI                    OK    0
+  Hacker News AI                           OK    0
+  Google News – OpenAI                     OK    0
+  Google News – Claude                     OK    0
+  Google News – Gemini                     OK    0
+
+--- FUTÁS: 2026. 03. 14. 17:31:51 (Budapest) ---
+Témák: ai | Modell: claude-sonnet-4-6 | Hírek: 0
+Költség: $1.21378 ≈ 415.5 Ft | Token: 359,492
   The Verge AI                             OK    8
   TechCrunch                               OK    0
   Ars Technica                             OK    0

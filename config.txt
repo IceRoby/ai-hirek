@@ -27,11 +27,31 @@ config | aktiv_temak | ai
 # ----------------------------------------------------------------
 # 2. AI MODELL
 # ----------------------------------------------------------------
-# claude-haiku-4-5-20251001  → legolcsóbb (~$0.01-0.03/téma)
-# claude-sonnet-4-6          → közepes (~$0.05-0.10/téma)
-# claude-opus-4-5            → legjobb (~$0.20-0.50/téma)
+# Melyik AI modellt használja a hírgyűjtéshez.
+# Minden providerhez külön API kulcs kell GitHub Secrets-ben!
 #
-config | modell | claude-haiku-4-5-20251001
+# ── ANTHROPIC (Claude) – ANTHROPIC_API_KEY ──────────────────────
+#   claude-haiku-4-5-20251001  → legolcsóbb  ~$0.01-0.03/futás
+#   claude-sonnet-4-6          → ajánlott    ~$0.05-0.10/futás ← legjobb ár/érték
+#   claude-opus-4-6            → legjobb     ~$0.15-0.30/futás
+#   claude-opus-4-5            → erős        ~$0.15-0.30/futás
+#
+# ── OPENAI (ChatGPT) – OPENAI_API_KEY ───────────────────────────
+#   gpt-4o-mini                → olcsó       ~$0.01-0.03/futás
+#   gpt-4o                     → jó          ~$0.05-0.15/futás
+#   gpt-4.1                    → ajánlott    ~$0.04-0.10/futás
+#   gpt-4.1-mini               → olcsó       ~$0.01-0.03/futás
+#
+# ── GOOGLE (Gemini) – GOOGLE_API_KEY ────────────────────────────
+#   gemini-2.0-flash           → legolcsóbb  ~$0.005-0.02/futás
+#   gemini-2.5-pro             → erős        ~$0.05-0.15/futás
+#   gemini-1.5-flash           → olcsó       ~$0.003-0.01/futás
+#
+# MEGJEGYZÉS: OpenAI és Google esetén web search nem elérhető,
+# csak az RSS feedekre és a modell tudására támaszkodik.
+# Anthropic Claude-dal a legjobb az élő webes keresés!
+#
+config | modell | claude-sonnet-4-6
 
 
 # ----------------------------------------------------------------

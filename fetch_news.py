@@ -477,11 +477,53 @@ def fetch_news_for_tema(tema_kulcs, topic_adat, kategoriak_lista,
 
     oldal_cim = cfg.get("oldal_cim", leiras)
 
-    print(f"Claude API hívás... ({MODELL})")
+    provider = KOLTSEG_TABLA.get(MODELL, {}).get("provider", "anthropic")
+    print(f"API hívás... ({provider} / {MODELL})")
+
+    if provider == "openai":
+        # OpenAI API hívás
+        import urllib.request as ur, json as js
+        openai_key = os.environ.get("OPENAI_API_KEY", "")
+        if not openai_key:
+            print("❌ OPENAI_API_KEY nincs beállítva GitHub Secrets-ben!")
+            news_json = {"date": today, "tema": tema_kulcs,
+                        "summary": "OpenAI API kulcs hiányzik.", "news": [],
+                        "new_sources": [], "new_categories": [], "new_topics": []}
+            news_json["_token_usage"] = {}
+            news_json["_rss_stats"] = rss_stats
+            return news_json
+
+        payload = {
+            "model": MODELL,
+            "max_tokens": 16000,
+            "messages": [{"role": "user", "content": None}]  # filled below
+        }
+        # OpenAI nem támogatja a beépített web search tool-t ugyanígy
+        # Ezért az RSS kontextusra támaszkodunk
+        use_web_search = False
+
+    elif provider == "google":
+        # Google Gemini API hívás
+        google_key = os.environ.get("GOOGLE_API_KEY", "")
+        if not google_key:
+            print("❌ GOOGLE_API_KEY nincs beállítva GitHub Secrets-ben!")
+            news_json = {"date": today, "tema": tema_kulcs,
+                        "summary": "Google API kulcs hiányzik.", "news": [],
+                        "new_sources": [], "new_categories": [], "new_topics": []}
+            news_json["_token_usage"] = {}
+            news_json["_rss_stats"] = rss_stats
+            return news_json
+        use_web_search = False
+
+    else:
+        use_web_search = True  # Anthropic - web search elérhető
+
+    # Prompt összeállítása (minden providernél ugyanaz)
+    prompt_text = None  # filled below
 
     response = client.messages.create(
         model=MODELL, max_tokens=16000,
-        tools=[{"type": "web_search_20250305", "name": "web_search"}],
+        tools=[{"type": "web_search_20250305", "name": "web_search"}] if use_web_search else [],
         messages=[{"role": "user", "content":
             f"""Mai dátum: {today}
 
@@ -489,6 +531,8 @@ Te a(z) '{leiras}' témájú hírek szerkesztője vagy.
 {nylv_ut}
 
 {date_filter}
+⚠️ SZIGORÚ DÁTUMSZŰRŐ: Minden hír "date" mezőjét töltsd ki a valódi megjelenési dátummal!
+Ha egy hír {since_text} előtt jelent meg, NE vedd fel! Ellenőrizd a dátumot minden hírnél!
 {kizarasi}
 
 FÓKUSZ: {FOKUSZ}
@@ -613,9 +657,20 @@ KIZÁRÓLAG valid JSON-t írj:
 # ================================================================
 
 KOLTSEG_TABLA = {
-    "claude-haiku-4-5-20251001": {"input": 0.00025, "output": 0.00125},
-    "claude-sonnet-4-6":         {"input": 0.003,   "output": 0.015},
-    "claude-opus-4-5":           {"input": 0.015,   "output": 0.075},
+    # Claude modellek (Anthropic API)
+    "claude-haiku-4-5-20251001": {"input": 0.00025,  "output": 0.00125, "provider": "anthropic"},
+    "claude-sonnet-4-6":         {"input": 0.003,    "output": 0.015,   "provider": "anthropic"},
+    "claude-opus-4-6":           {"input": 0.005,    "output": 0.025,   "provider": "anthropic"},
+    "claude-opus-4-5":           {"input": 0.005,    "output": 0.025,   "provider": "anthropic"},
+    # OpenAI modellek
+    "gpt-4o":                    {"input": 0.0025,   "output": 0.010,   "provider": "openai"},
+    "gpt-4o-mini":               {"input": 0.00015,  "output": 0.0006,  "provider": "openai"},
+    "gpt-4.1":                   {"input": 0.002,    "output": 0.008,   "provider": "openai"},
+    "gpt-4.1-mini":              {"input": 0.0004,   "output": 0.0016,  "provider": "openai"},
+    # Google Gemini modellek
+    "gemini-2.0-flash":          {"input": 0.0001,   "output": 0.0004,  "provider": "google"},
+    "gemini-2.5-pro":            {"input": 0.00125,  "output": 0.010,   "provider": "google"},
+    "gemini-1.5-flash":          {"input": 0.000075, "output": 0.0003,  "provider": "google"},
 }
 
 def becsuld_koltseg(modell, temak_szama, hirek_szama_str):

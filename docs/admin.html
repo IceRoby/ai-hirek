@@ -785,6 +785,9 @@ select { cursor: pointer; }
       <div class="nav-item" onclick="showPanel('history')">
         <span class="nav-icon">◷</span> Előzmények
       </div>
+      <div class="nav-item" onclick="showPanel('errorlog')">
+        <span class="nav-icon">⚠</span> Hibanapló
+      </div>
     </nav>
     <div class="sidebar-footer">
       <div class="repo-info">
@@ -848,9 +851,11 @@ select { cursor: pointer; }
         <div class="workflow-card">
           <div style="font-weight:600;margin-bottom:12px">Gyorslinkek</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <a class="btn" id="ghPagesLink" href="#" target="_blank">◈ GitHub Pages megtekintése</a>
+            <a class="btn btn-primary" id="newsLink" href="#" target="_blank">◈ Hírek weboldal</a>
+            <a class="btn" id="ghPagesLink" href="#" target="_blank">⊡ GitHub Pages főoldal</a>
             <a class="btn" href="https://console.anthropic.com" target="_blank">◎ Anthropic Console</a>
             <a class="btn" id="repoLink" href="#" target="_blank">⊞ GitHub Repó</a>
+            <a class="btn" id="actionsLink" href="#" target="_blank">▶ Actions log</a>
           </div>
         </div>
       </div>
@@ -1064,6 +1069,20 @@ select { cursor: pointer; }
         </div>
       </div>
 
+      <!-- ERROR LOG -->
+      <div class="panel" id="panel-errorlog">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-weight:600">Hibanapló (error.log)</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="loadPanel('errorlog')">↻ Frissítés</button>
+            <button class="btn btn-danger btn-sm" onclick="clearErrorLog()">✕ Törlés</button>
+          </div>
+        </div>
+        <div id="errorLogContent" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--muted);max-height:600px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;">
+          Betöltés...
+        </div>
+      </div>
+
       <!-- HISTORY -->
       <div class="panel" id="panel-history">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -1106,6 +1125,8 @@ function doLogin() {
         document.getElementById('statusDot').classList.add('connected');
         document.getElementById('repoLink').href = `https://github.com/${OWNER}/${REPO}`;
         document.getElementById('ghPagesLink').href = `https://${OWNER}.github.io/${REPO}`;
+        document.getElementById('newsLink').href = `https://${OWNER}.github.io/${REPO}`;
+        document.getElementById('actionsLink').href = `https://github.com/${OWNER}/${REPO}/actions`;
         refreshAll();
       } else {
         showAuthError('Érvénytelen token vagy repó!');
@@ -1205,6 +1226,7 @@ async function loadPanel(name) {
   else if (name === 'wordpress')  await loadWordpress();
   else if (name === 'editor')     await loadFile(currentFile);
   else if (name === 'history')    await loadHistory();
+  else if (name === 'errorlog')   await loadErrorLog();
 }
 
 // ── DASHBOARD ──
@@ -1248,23 +1270,64 @@ async function triggerWorkflow() {
   const btn = document.getElementById('runBtn');
   if (btn) btn.disabled = true;
 
-  const statusEl = document.getElementById('runStatus') || document.getElementById('runStatus2');
-  statusEl.innerHTML = '<div class="alert alert-info"><span class="spinner"></span> Workflow indítása...</div>';
+  // Update BOTH status elements
+  ['runStatus','runStatus2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<div class="alert alert-info"><span class="spinner"></span> Workflow indítása...</div>';
+  });
 
   try {
-    const res = await ghFetch(
+    const res = await fetch(
       `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/daily-news.yml/dispatches`,
-      'POST', { ref: 'main' }
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `token ${TOKEN}`,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ref: 'main' })
+      }
     );
-    statusEl.innerHTML = '<div class="alert alert-success">✓ Workflow sikeresen elindítva! Hamarosan fut...</div>';
-    showToast('Workflow elindítva!', 'success');
-  } catch(e) {
-    statusEl.innerHTML = '<div class="alert alert-error">✗ Hiba a workflow indításakor!</div>';
-    showToast('Hiba!', 'error');
-  } finally {
-    if (btn) {
-      setTimeout(() => { btn.disabled = false; }, 5000);
+
+    console.log('Workflow dispatch status:', res.status);
+
+    if (res.status === 204) {
+      const msg = '✓ Workflow elindítva! Néhány másodperc múlva fut...';
+      ['runStatus','runStatus2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = `<div class="alert alert-success">${msg}</div>`;
+      });
+      showToast('Workflow elindítva!', 'success');
+      // Link to actions
+      const aLink = document.getElementById('actionsLink');
+      if (aLink) window.open(aLink.href, '_blank');
+    } else {
+      let body = '';
+      try { body = await res.text(); } catch(e2) {}
+      let hint = '';
+      if (res.status === 422) hint = 'Ellenőrizd hogy a daily-news.yml tartalmaz-e workflow_dispatch: sort!';
+      else if (res.status === 403) hint = 'Token jogosultság hiba – kell: repo + workflow scope';
+      else if (res.status === 404) hint = 'Workflow nem található: .github/workflows/daily-news.yml';
+      else if (res.status === 401) hint = 'Érvénytelen token – jelentkezz be újra';
+      const errMsg = `HTTP ${res.status} ${hint}`;
+      console.error('Workflow error:', res.status, body);
+      ['runStatus','runStatus2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = `<div class="alert alert-error">✗ ${errMsg}<br><small style="font-family:var(--mono);opacity:.6;font-size:10px">${body.substring(0,300)}</small></div>`;
+      });
+      showToast(`Hiba: HTTP ${res.status}`, 'error');
     }
+  } catch(e) {
+    console.error('Workflow fetch error:', e);
+    ['runStatus','runStatus2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<div class="alert alert-error">✗ Hálózati hiba: ${e.message}</div>`;
+    });
+    showToast('Hálózati hiba!', 'error');
+  } finally {
+    if (btn) setTimeout(() => { btn.disabled = false; }, 5000);
   }
 }
 
@@ -1715,6 +1778,42 @@ async function loadHistory() {
   document.getElementById('historyList').innerHTML = html;
 }
 
+// ── ERROR LOG ──
+async function loadErrorLog() {
+  const el = document.getElementById('errorLogContent');
+  const f = await getFile('error.log');
+  if (!f) {
+    el.textContent = 'Nincs error.log fájl – még nem fordult elő hiba.';
+    el.style.color = 'var(--accent)';
+    return;
+  }
+  const content = f.content.trim();
+  if (!content) {
+    el.textContent = 'A hibanapló üres.';
+    el.style.color = 'var(--accent)';
+    return;
+  }
+  // Colorize error lines
+  el.innerHTML = content
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(❌ HIBA:.*)/g, '<span style="color:var(--danger);font-weight:700">$1</span>')
+    .replace(/(Kontextus:.*)/g, '<span style="color:var(--warning)">$1</span>')
+    .replace(/(Hiba típusa:.*)/g, '<span style="color:var(--info)">$1</span>')
+    .replace(/(ℹ️.*)/g, '<span style="color:var(--accent);opacity:.7">$1</span>')
+    .replace(/(─{10,})/g, '<span style="color:var(--border2)">$1</span>');
+  el.style.color = 'var(--muted)';
+}
+
+async function clearErrorLog() {
+  if (!confirm('Törölni szeretnéd az összes hibaüzenetet?')) return;
+  try {
+    await putFile('error.log', '# Error log törölve: ' + new Date().toISOString() + '\n',
+                  '🗑️ error.log törölve – Admin');
+    showToast('Hibanapló törölve!', 'success');
+    await loadErrorLog();
+  } catch(e) { showToast('Törlési hiba!', 'error'); }
+}
+
 // ── TOAST ──
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
@@ -1736,6 +1835,8 @@ if (savedToken && savedOwner && savedRepo) {
   document.getElementById('statusDot').classList.add('connected');
   document.getElementById('repoLink').href = `https://github.com/${OWNER}/${REPO}`;
   document.getElementById('ghPagesLink').href = `https://${OWNER}.github.io/${REPO}`;
+  document.getElementById('newsLink').href = `https://${OWNER}.github.io/${REPO}`;
+  document.getElementById('actionsLink').href = `https://github.com/${OWNER}/${REPO}/actions`;
   refreshAll();
 } else {
   document.getElementById('authToken').value = '';

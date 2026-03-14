@@ -1,1 +1,631 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>AI Hírek</title></head><body><h1>Hamarosan...</h1><p>A hírek minden héten frissülnek automatikusan.</p></body></html>
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesterséges intelligencia hírek – 2026. 03. 14.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0f;--surface:#13131a;--border:#1e1e2e;--text:#f0f0fa;--muted:#c8c8e0;--accent:#c8ff00}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(200,255,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+  .container{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+  header{padding:60px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px;animation:fadeDown .6s ease both}
+  .header-tag{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .header-tag::before{content:'';display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease infinite}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:8px}
+  h1 em{font-style:normal;color:var(--accent)}
+  .timestamp{color:var(--muted);font-size:.85rem;margin-top:6px}
+  .summary-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:20px 24px;border-radius:0 8px 8px 0;color:#d0d0e8;line-height:1.7;font-size:.95rem;margin-top:24px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;animation:fadeUp .6s .2s ease both}
+  .filter-separator{width:100%;height:1px;background:var(--border);margin:4px 0}
+  .filter-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:100px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .2s}
+  .filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(200,255,0,.05)}
+  .tema-btn{border-style:dashed}
+  .news-count{font-family:'Syne',sans-serif;font-size:.8rem;color:var(--muted);margin-bottom:24px}
+  .news-count span{color:var(--accent);font-weight:700}
+  .news-grid{display:grid;gap:20px}
+  .news-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;transition:transform .2s,border-color .2s;animation:fadeUp .5s ease both}
+  .news-card:hover{transform:translateY(-2px);border-color:#2e2e42}
+  .card-accent{width:4px;flex-shrink:0;opacity:.8}
+  .card-body{padding:22px 26px;flex:1}
+  .card-meta{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+  .category-badge{display:inline-block;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:1px solid}
+  .item-date{font-size:.75rem;color:var(--muted);opacity:.8}
+  .card-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.35;margin-bottom:10px;color:var(--text)}
+  .card-summary{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:12px}
+  .card-details{font-size:.9rem;line-height:1.75;color:#b8b8d8;margin-bottom:12px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid rgba(200,255,0,0.2)}
+  .card-relevance{font-size:.85rem;line-height:1.6;color:#a0c8a0;margin-bottom:14px;padding:8px 12px;background:rgba(200,255,0,0.04);border-radius:6px}
+  .relevance-label{font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;margin-right:4px}
+  .card-link{display:inline-flex;align-items:center;gap:6px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.05em;color:var(--accent);text-decoration:none;opacity:.8;transition:opacity .2s}
+  .card-link:hover{opacity:1}
+  footer{margin-top:64px;padding:32px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:.8rem}
+  footer p{margin-bottom:10px}
+  footer strong{color:var(--accent)}
+  .legal{margin-top:20px;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:.75rem;line-height:1.6;color:#888;text-align:left;max-width:800px;margin-left:auto;margin-right:auto}
+  .legal strong{color:#aaa}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-tag">Automatikus összefoglaló</div>
+    <h1>Mesterséges intelligencia hírek</h1>
+    <p class="timestamp">Utoljára frissítve: <strong style="color:var(--accent)">2026. 03. 14. 16:59:21 (Budapest)</strong></p>
+    <div class="summary-box">Az elmúlt hét markáns fejleményeivel az AI megerősödik az infrastruktúra szerves részévé, miközben Anthropic Claude vizuális képességeket kap és új partnerhálózatot indít. Google Gemini agentic automatizációval érkezik, Microsoft a Copilot Health-hel a healthcare-be lép, és a politikai-biztonsági viták továbbra is középpontban állnak az iparágban.</div>
+  </header>
+  <div class="filters"><button class="filter-btn active" onclick="filter(this,'mind')">Összes</button>
+    <button class="filter-btn" onclick="filter(this,'Magyar AI')">🇭🇺 Magyar AI</button>
+    <button class="filter-btn" onclick="filter(this,'Nagy cégek')">🌍 Nagy cégek</button>
+    <button class="filter-btn" onclick="filter(this,'Startupok')">💡 Startupok</button>
+    <button class="filter-btn" onclick="filter(this,'Szabályozás')">⚖️ Szabályozás</button>
+    <button class="filter-btn" onclick="filter(this,'Tudomány')">🔬 Tudomány</button>
+    <button class="filter-btn" onclick="filter(this,'Alkalmazások')">🚀 Alkalmazások</button>
+    <button class="filter-btn" onclick="filter(this,'Biztonság')">🛡️ Biztonság</button>
+    <button class="filter-btn" onclick="filter(this,'Magyar')">🇭🇺 Magyar</button>
+    <button class="filter-btn" onclick="filter(this,'Nemzetközi')">🏢 Nemzetközi</button>
+    <button class="filter-btn" onclick="filter(this,'Technológia')">🎯 Technológia</button>
+    <button class="filter-btn" onclick="filter(this,'Innováció')">🇭🇺 Innováció</button>
+</div>
+  <p class="news-count">Megjelenített hírek: <span id="count">25</span> / 25</p>
+  <div class="news-grid" id="grid">
+    <article class="news-card" data-category="Nagy cégek" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">🌍 Nagy cégek</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">Claude interaktív vizuális elemeket hoz létre beszélgetésekben</h2>
+        <p class="card-summary">Az Anthropic Claude AI frissítést vezetett be, amely lehetővé teszi az AI-nak, hogy közvetlenül az beszélgetésben hozzon létre diagramokat, grafikonokat és egyéb vizuális tartalmat HTML és SVG felhasználásával.</p>
+        <div class="card-details">A funkció elérhető az összes Claude felhasználó számára, az ingyenes verzióktól a fizetős csomagokig. Az "Imagine with Claude" megelőző verzióból fejlődött, most az inline megjelenítéssel működik az oldalpanel helyett.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Könnyebben érthető vizuális magyarázatokat kaphatsz összetett adatokról vagy koncepcióról anélkül, hogy külön szöveget vagy képeket kellene másolnia. Gyakorlati segítség üzleti elemzéshez, oktatáshoz.</div>
+        <a href="https://www.engadget.com/ai/claude-can-now-generate-charts-and-diagrams-160000369.html" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Engadget, Anthropic</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nagy cégek" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">🌍 Nagy cégek</span>
+          <span class="item-date">📅 2026-03-03</span>
+        </div>
+        <h2 class="card-title">Google Pixel Drop március 2026: Gemini agentic automatizáció és Circle to Search fejlesztések</h2>
+        <p class="card-summary">Google март 2026 Pixel Drop frissítése Gemini agentic AI képességeket hoz az Android eszközökre, amely automatikusan végez fel feladatokat (élelmiszer rendelés, utazási foglalás) a felhasználó nevében.</p>
+        <div class="card-details">Az agentic Gemini funkció Pixel 10, 10 Pro és 10 Pro XL eszközökre érhető el beta verzióban. A Circle to Search többszörös objektumokat tud azonosítani egy képen, az At a Glance widget új sporteredmény és pénzügyi mozgás kártyákat kapott.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Megtakarít időt ismétlődő feladatokra (ételrendelés, utazás szervezés) – az AI az alkalmazásban dolgozik a háttérben, míg te más dolgokkal foglalkozhatsz.</div>
+        <a href="https://blog.google/products-and-platforms/devices/pixel/march-2026-pixel-drop/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>9to5Google, Google Blog</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Alkalmazások" data-tema="ai">
+      <div class="card-accent" style="background:#7b2d8b"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#7b2d8b;border-color:#7b2d8b20;background:#7b2d8b10">🚀 Alkalmazások</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">Microsoft Copilot Health: egészségügyi adatok aggregálása AI-val</h2>
+        <p class="card-summary">A Microsoft új Copilot Health funkciót indított, amely összeköti az elektronikus egészségügyi feljegyzéseket, 50+ viselkedési eszköz adatait és laboreredményeket, hogy AI-alapú egészségügyi betekintéseket nyújtson.</p>
+        <div class="card-details">Az über 50 000 amerikai kórháztól és orvosi szervezettől származó adatokhoz csatlakozik HealthEx-en keresztül. Az adatok elkülönítetten tárolódnak az általános Copilot-tól, szigorú titkosítás és hozzáférés-vezérléssel. Jelenlegi US-csak, felnőtt felhasználók, várólistás hozzáférés.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha часtas egészségügyi kérdéseid vannak, az AI koherent képet nyújt az egészségi adataidról, segít felkészülni orvosi konzultációra, azonosít trendeket az alvásban, aktivitásban.</div>
+        <a href="https://fortune.com/2026/03/12/microsoft-copilot-health-ai-medical-personal-health-data/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Fortune, Microsoft AI</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nagy cégek" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">🌍 Nagy cégek</span>
+          <span class="item-date">📅 2026-03-07</span>
+        </div>
+        <h2 class="card-title">OpenAI GPT-5.4 Thinking modell meghaladja az emberi szintet gazdaságilag értékes feladatokban</h2>
+        <p class="card-summary">Az OpenAI GPT-5.4 Thinking modellje 83% pontosságot ért el a GDPVal benchmark-on, amely gazdaságilag érték feladatokat szimulál, meghaladva az emberi szakértőket.</p>
+        <div class="card-details">Morgan Stanley tanulmánya szerint a GPT-5.4 1 millió token kontextus ablak nyújt, autonóm multi-lépéses munkafolyamat-végrehajtást tesz lehetővé szoftverterületen, OSWorld-V tesztben 75% emberi baseline 72,4%.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Az AI egyre képesebb önálló, összetett szellemi munkát végezni – potenciál a professzionális tudásmunkások termelékenységét növelheti.</div>
+        <a href="https://fortune.com/2026/03/13/morgan-stanley-warns-an-ai-breakthrough-is-coming-in-2026-and-most-of-the-world-isnt-ready/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Morgan Stanley, Crescendo AI</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Startupok" data-tema="ai">
+      <div class="card-accent" style="background:#f4a261"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#f4a261;border-color:#f4a26120;background:#f4a26110">💡 Startupok</span>
+          <span class="item-date">📅 2026-03-10</span>
+        </div>
+        <h2 class="card-title">Yann LeCun AMI Labs 1.03 milliárd dolláros seed finanszírozást gyűjtött</h2>
+        <p class="card-summary">A Meta volt vezető AI tudósa, Yann LeCun alapította AMI Labs az Európa történetének legnagyobb seed kerekletét kapta 3.5 milliárd dollár értékelésen, "world models" fejlesztésére.</p>
+        <div class="card-details">A befektetésben Nvidia, Bezos Expeditions, Temasek, Cathay Innovation szerepel. Az AMI Labs az LLM alternatívájaként estrutúrált világ modellek építésére összpontosít, amelyek strukturált, emberhez hasonló reprezentációkat tanulnak.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Alternatív AI megközelítés az LLM-ekhez képest – potenciálisan jobbabb robotika, egészségügy, gyártás alkalmazások, más filozófiai alapokkal.</div>
+        <a href="https://aihirfolyam.hu/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>AI Hírfolyam, TechCrunch</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nagy cégek" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">🌍 Nagy cégek</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">Anthropic Claude Partner Network 100 millió dolláron indítja el</h2>
+        <p class="card-summary">Az Anthropic új Claude Partner Network programot indított 100 millió dolláros kezdeti ráfordítással, amely képzésre, tanúsítványozásra és közös piaci fejlesztésre fokuszál.</p>
+        <div class="card-details">Az Anthropic Academy pelagikus anyagait, sales playbook-okat, Claude Certified Architect Foundations tanúsítvány elérhető. A program partner szervezeteknek támogatást nyújt Claude vállalati elfogadásához.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha szervezeted Claude-t szeretne kifejleszteni, strukturált támogatás, képzés és sertifikáció érhető el a partner szervezeteknek.</div>
+        <a href="https://releasebot.io/updates/anthropic" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Anthropic</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Biztonság" data-tema="ai">
+      <div class="card-accent" style="background:#6c757d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#6c757d;border-color:#6c757d20;background:#6c757d10">🛡️ Biztonság</span>
+          <span class="item-date">📅 2026-03-03</span>
+        </div>
+        <h2 class="card-title">#QuitGPT mozgalom 2,5 millió ChatGPT felhasználó lemondásakor Pentagon szerződés miatt</h2>
+        <p class="card-summary">Az OpenAI Pentagon-nal kötött szerződése (AI hadmilitary rendszereken történő telepítésére) masszív backlash-t váltott ki, amely a #QuitGPT kampányt indította, 2,5 millió felhasználó lemondott, Claude lett az App Store-ban #1.</p>
+        <div class="card-details">ChatGPT eltávolítások 295%-kal ugrott meg egy nap alatt az USA-ban, egy csillagos értékelések 775%-kal nőttek. Az Anthropic korábban visszautasította az ugyanez szerződést biztonsági aggodalomra hivatkozva. Sam Altman azt állította, a szerződés ugyanolyan korlátozásokat tartalmaz mint amit az Anthropic-t megbüntettek.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Politikai és etikai aggályok az AI fejlettség üzleti és katonai felhasználása körül – választásodat mint felhasználó befolyásolhatja az AI fejlesztés irányát.</div>
+        <a href="https://mml-studio.com/blog/ai-weekly-march-2-8-2026/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>MML-studio, Fortune</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Szabályozás" data-tema="ai">
+      <div class="card-accent" style="background:#2d6a4f"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#2d6a4f;border-color:#2d6a4f20;background:#2d6a4f10">⚖️ Szabályozás</span>
+          <span class="item-date">📅 2026-03-10</span>
+        </div>
+        <h2 class="card-title">Anthropic beperli az amerikai kormányt Pentagon "ellátási lánc kockázat" osztályozása miatt</h2>
+        <p class="card-summary">Az Anthropic jogi lépést tett, amikor a Pentagon a vállalatot "ellátási lánc kockázatnak" minősítette, amely megakadályozná az amerikai kormányzati szerzők a Claude használatát.</p>
+        <div class="card-details">17 szövetségi ügynökség és az Elnöki Hivatal ellen kereset nyújtott be San Franciscóban. A vita az autonóm halálos fegyverek és tömeges megfigyelés tilalmai körül forog, amelyekhez az Anthropic nem hajlandó engedni.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Az AI cégek biztonsági elvei és kormányzati nyomás közötti konfliktus – megmutatja az etika és geopolitika közötti feszültséget az AI fejlődésben.</div>
+        <a href="https://aihirfolyam.hu/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>AI Hírfolyam, Radical Data Science</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nagy cégek" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">🌍 Nagy cégek</span>
+          <span class="item-date">📅 2026-02-17</span>
+        </div>
+        <h2 class="card-title">Claude Sonnet 4.6 február 17-én, 1M token kontextus ablakkal</h2>
+        <p class="card-summary">Az Anthropic Claude Sonnet 4.6 jelent meg javított kódolási, hosszú kontextus érvelési és ügynök tervezési képességekkel, 1M token beta kontextus ablakkal.</p>
+        <div class="card-details">A modell a Finance Agent benchmarkon az első helyet tartja, 14,5 óra feladat-befejezési időhorizontot támogat – a leghosszabb az összes AI modell között február 2026-ban. Kódolási, pénzügyi elemzés, tudásmunka terén erős.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha hosszú dokumentumokat, összetett projekteket kell feldolgozni, a Sonnet 4.6 nagyobb kontextusa lehetővé teszi több adattal való munkát egy munkamenetben.</div>
+        <a href="https://releasebot.io/updates/anthropic/claude" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Releasebot, Medium</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Robotics" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">📰 Robotics</span>
+          <span class="item-date">📅 2026-03-16</span>
+        </div>
+        <h2 class="card-title">ABB Robotics NVIDIA Omniverse integrálást indít industrial physical AI-hez</h2>
+        <p class="card-summary">Az ABB Robotics NVIDIA Omniverse könyvtárakat integrálódik RobotStudio-ba, hogy industrial-fokú physical AI-t szállítson 99%-os szimulációs pontossággal.</p>
+        <div class="card-details">Az új RobotStudio HyperReality (H2 2026 jelent meg) virtuális edzésből valós világra való telepítést segít, költségeket 40% csökkenthet, time-to-market 50% felgyorsít. Foxconn kínai elektronikai gyártás pilótáját futtatja.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Gyárak és termelési szervezetek hatékonyabban képesek tesztelni és telepíteni a robot AI-t szimuláción keresztül – gyorsabb innováció, alacsonyabb kockázat.</div>
+        <a href="https://www.automate.org/robotics/news/abb-robotics-partners-with-nvidia-to-deliver-industrial-grade-physical-ai-at-scale" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>ABB Robotics</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Robotics" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">📰 Robotics</span>
+          <span class="item-date">📅 2026-02-28</span>
+        </div>
+        <h2 class="card-title">Google Intrinsic az Android robotika OS-hez hasonlóan mozog</h2>
+        <p class="card-summary">A Google Intrinsic robotikai szoftver projektét "Other Bets"-ből a fő vállalatba helyezte át, Android-szerű robotika operációs rendszer stratégiát követve.</p>
+        <div class="card-details">Intrinsic DeepMind-dal, cloud és infrastruktúra csapatokkal szorosan fog dolgozni. A cél olyan robotika OS-t biztosítani, amely fejlesztőket lehetővé tesz a robotika alkalmazások könnyebben felépíteni, hardver-agnosztikus megközelítéssel.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha robotika alkalmazásokat szeretnél építeni, egy nyílt, fejlesztő-barát platform elérhető lehet, szimplifikálva a robotika szoftver fejlesztést.</div>
+        <a href="https://www.cnbc.com/2026/02/28/google-wants-intrinsic-to-be-android-for-robots-moves-into-physical-ai.html" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>CNBC</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Robotics" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">📰 Robotics</span>
+          <span class="item-date">📅 2026-01-15</span>
+        </div>
+        <h2 class="card-title">Hyundai AI+Robotics roadmap CES 2026-on: humán-központú robotok</h2>
+        <p class="card-summary">A Hyundai Motor Group CES 2026-on részletezett AI+Robotics roadmap-jét, amely természetes interakció lehetővé tevő intelligens koproboták felé irányul.</p>
+        <div class="card-details">A stratégia fejlett LLM-eket és generatív AI-t integrál mobil robotokba, nyílt interakciót az ember környezetével. Moduláris robot platform logisztikára és személyes asszisztenciára, Boston Dynamics partnerség AI rendszerekre.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> A jövő robotika emberközpontú, könnyebben kommunikálható – potenciálisan otthoni segítség vagy szervezeti logisztika alkalmazások.</div>
+        <a href="https://www.crescendo.ai/news/latest-ai-news-and-updates" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Crescendo AI</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Biztonság" data-tema="ai">
+      <div class="card-accent" style="background:#6c757d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#6c757d;border-color:#6c757d20;background:#6c757d10">🛡️ Biztonság</span>
+          <span class="item-date">📅 2026-03-13</span>
+        </div>
+        <h2 class="card-title">AI biztonsági képességek gyorsabban skálázódnak mint megértésünk</h2>
+        <p class="card-summary">Az METR kutatás szerint az AI ügynökök autonóm feladat-befejezésének hossza 7 havi megduplázódik – Moore törvényt 3x-szeresen gyorsabb, 2020: 2 másodperc, 2026 eleje: 4+ óra.</p>
+        <div class="card-details">Az Anthropic, OpenAI és más frontier labs azt jelenti, hogy 4+ óra feladatokat végez el autonóm ügynök 50% megbízhatósággal. AI biztonság már nem elméleti, hanem mérnöki kihívás.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Az AI képességei gyorsabban fejlődnek mint amennyit meg tudjuk érteni – kritikus a biztonsági kutatás és ai alignment fontossága.</div>
+        <a href="https://www.taskade.com/blog/what-is-ai-safety" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Taskade Blog, METR</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Innováció" data-tema="ai">
+      <div class="card-accent" style="background:#e63946"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#e63946;border-color:#e6394620;background:#e6394610">🇭🇺 Innováció</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">Morgan Stanley: AI nagyobb áttörés jön H1 2026, a világ nem kész</h2>
+        <p class="card-summary">Morgan Stanley tanulmánya szerint transzformatív AI áttörés érkezik 2026 első felében, az amerikai AI laboratóriumok precedens nélküli számítási ereje által vezérelve.</p>
+        <div class="card-details">Az elemzés azt mutatja, hogy 10x számítási erő 2x "intelligencia" szorzóval megy – a skálázási törvények kitartanak. OpenAI CEO Sam Altman azt fejtette ki, hogy 1-5 fő új cégek versenyre képesek az óriások ellen.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Az AI transzformáció rohamosan gyorsul – szervezeti készültséged és megfigyelésed kritikus a versenytársias előnyhöz.</div>
+        <a href="https://finance.yahoo.com/news/morgan-stanley-warns-ai-breakthrough-072000084.html" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Morgan Stanley, Fortune</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nemzetközi" data-tema="ai">
+      <div class="card-accent" style="background:#264653"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#264653;border-color:#26465320;background:#26465310">🏢 Nemzetközi</span>
+          <span class="item-date">📅 2026-03-05</span>
+        </div>
+        <h2 class="card-title">Oracle 20-30K munkahelyet elimináció AI infrastruktúrára fordít</h2>
+        <p class="card-summary">Az Oracle bejelentette, hogy 20 000-30 000 alkalmazottat elbocsát, 8-10 milliárd dollárt AI infrastruktúrára irányít. Block (Square, Cash App) 4000 munkahelyet vágott, 40% munkaerőből, AI helyettesítésre hivatkozva.</p>
+        <div class="card-details">Az Oracle nyíltan elismeri, hogy AI aktívan helyettesíti az emberi munkavállalókat. Ez az egyik legközvetlenebb nyilvánosságú bejelentése annak, hogy AI munkaerő-helyettesítés valódi történet – nem csupán augmentáció.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> A munkaerő-piaci zsugorodás bizonyosodott – az újraskillezés, AI-val való kollaboráció fontossá vált a munkapiaci relevancia megtartásához.</div>
+        <a href="https://www.crescendo.ai/news/latest-ai-news-and-updates" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Crescendo AI, CNBC</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Alkalmazások" data-tema="ai">
+      <div class="card-accent" style="background:#7b2d8b"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#7b2d8b;border-color:#7b2d8b20;background:#7b2d8b10">🚀 Alkalmazások</span>
+          <span class="item-date">📅 2026-02-25</span>
+        </div>
+        <h2 class="card-title">Samsung Galaxy S26 AI agentic funkciók közé tartozik az intelligens Call Screening, Now Nudge</h2>
+        <p class="card-summary">A Samsung Galaxy Unpacked 2026 Galaxy S26 sorozatot mutatta be, amely agentic AI-t építít be, Call Screening (összegzett hívások), Now Nudge (kontextuális sug gesztiók), valós idejű Bixby web keresés.</p>
+        <div class="card-details">A Galaxy S26 agentic AI-t épít be az infrastruktúrával – a Bixby valós idejű web keresést, kívül ügynök képességeket támogat. A phone AI-t infrastruktúrának, nem eszköznek tekinti.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha Samsung telefonja van, agentic AI útján intelligens segítséget kapsz hívások szűrésétől a kontextuális javaslatokig, seamless mobilélmény.</div>
+        <a href="https://news.samsung.com/global/galaxy-unpacked-2026-highlights-from-galaxy-unpacked-the-beginning-of-truly-agentic-ai" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Samsung Global Newsroom</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Robotics" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">📰 Robotics</span>
+          <span class="item-date">📅 2026-02-10</span>
+        </div>
+        <h2 class="card-title">Alibaba RynnBrain robotika AI modell nyitott forráskódban</h2>
+        <p class="card-summary">Az Alibaba új RynnBrain AI modelljét indította robotikáknak, amely nyílt forráskódú stratégiát követ, lehetővé téve fejlesztőknek szabadon használni a robottervezéshez.</p>
+        <div class="card-details">Az Alibaba DAMO Academy videói mutatják a robotot gyümölcsöt azonosítani és kosárba helyezni. A nyílt forráskódú megközelítés az Alibaba stratégiájának része a világ fejlesztőit eléréshez.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Nyílt forráskódú robotika AI modell elérhető – kisebb szervezetek felépíthetik a saját robotikai alkalmazásokat költséghatékonyan.</div>
+        <a href="https://www.cnbc.com/2026/02/10/alibaba-ai-model-robotics-rynnbrain-china.html" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>CNBC</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Alkalmazások" data-tema="ai">
+      <div class="card-accent" style="background:#7b2d8b"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#7b2d8b;border-color:#7b2d8b20;background:#7b2d8b10">🚀 Alkalmazások</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">OpenAI Video API Sora 2-vel indít videó generációhoz</h2>
+        <p class="card-summary">Az OpenAI Video API fejlesztőknek nyújt programozható interfészt videoalkotáshoz, kiterjesztéshez, módosításhoz Sora 2 másodrendű videó generátor modellel.</p>
+        <div class="card-details">A Video API lehetővé teszi automatizált videók létrehozását, szövegből a videót – fejlesztőknek új kreatív lehetőségeket nyit meg, filmműködéshez, marketing tartalomhoz.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha videó tartalmat kell létre hozni, az API-alapú megközelítés automatizálható munkafolyamatokat lehetővé tesz, gyorsabb termelés.</div>
+        <a href="https://jls42.org/en/news/ia-actualites-12-mar-2026" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>JLS42.org</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Alkalmazások" data-tema="ai">
+      <div class="card-accent" style="background:#7b2d8b"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#7b2d8b;border-color:#7b2d8b20;background:#7b2d8b10">🚀 Alkalmazások</span>
+          <span class="item-date">📅 2026-03-10</span>
+        </div>
+        <h2 class="card-title">Antropic kódáttekintés rendszert indít Claude Code-hoz</h2>
+        <p class="card-summary">Az Anthropic Code Review rendszert indított Claude Code-hoz, amely több AI ügynököt küld párhuzamosan pull requestre, függetlenül keresik a hibákat, kereszt-validálnak, és rangsorolják a problémákat.</p>
+        <div class="card-details">Az ügynökök összetett kódellenőrzéshez 20 perc átlag időt vesznek. A nagyobb változtatások több ügynök és mélyebb elemzést kapnak – mélyebb biztonsági ellenőrzés a kódban.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha szoftver fejlesztési csapatod van, AI-alapú kódértékelés emberi szintű rigorózus kódreview-t biztosít, gyorsabban.</div>
+        <a href="https://aihirfolyam.hu/" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>AI Hírfolyam</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nemzetközi" data-tema="ai">
+      <div class="card-accent" style="background:#264653"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#264653;border-color:#26465320;background:#26465310">🏢 Nemzetközi</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">Mistral AI "AI Now Summit" május 28-án Párizsban</h2>
+        <p class="card-summary">A Mistral AI bejelentette első flaggyhajó eseményét, "AI Now Summit" május 28, 2026 Párizsban vállalati AI transzformációra összpontosítva.</p>
+        <div class="card-details">A rendezvény világszerte vezetőket hoz össze. A Mistral erős európai AI szereplő, amely nyílt és biztonságos AI-ből építkezik – Európai alternatíva az amerikai laborok mellett.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha a Mistral és európai AI megközelítés érdekel, ezt az eseményt lehet követni az iparág vezető gondolkodási irányához.</div>
+        <a href="https://jls42.org/en/news/ia-actualites-12-mar-2026" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>JLS42.org</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Nagy cégek" data-tema="ai">
+      <div class="card-accent" style="background:#457b9d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#457b9d;border-color:#457b9d20;background:#457b9d10">🌍 Nagy cégek</span>
+          <span class="item-date">📅 2026-03-11</span>
+        </div>
+        <h2 class="card-title">Anthropic 70% új vállalati ügyfelek gyakorisága OpenAI előtt – Ramp AI Index</h2>
+        <p class="card-summary">A Ramp AI Index kutatás szerint Anthropic 70%-ban vezet az új vállalati ügyfél beszerzésben 2026 elején, szemben az OpenAI 25%-ával – fordított irány 2025-ből.</p>
+        <div class="card-details">Az adatok több mint 50 000 vállalkozásból érkezik a Ramp platform (vállalati hitelkártya, fizetések), megbízható mérő a valós AI költségvetési trendekből. Claude robosztus biztonsági, könnyű integrációs profil hajtja az növekedést.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Claude szervezeti előnyt biztosít – ha vállalati AI keresesi, Claude valósul meg a preferált opció adat-vezérelt vállalatoknak.</div>
+        <a href="https://jls42.org/en/news/ia-actualites-12-mar-2026" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>JLS42.org</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Magyar" data-tema="ai">
+      <div class="card-accent" style="background:#e63946"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#e63946;border-color:#e6394620;background:#e6394610">🇭🇺 Magyar</span>
+          <span class="item-date">📅 2026-03-08</span>
+        </div>
+        <h2 class="card-title">AI szintetikus adatok orvosi diagnosztikát szociális ritka betegségekhez</h2>
+        <p class="card-summary">Magyar kutatók (AIPM igazgató Szalóki Katalin) szintetikus pácienseket fejlesztenek labormintákból és genetikai adatokból, kis mintás tanulást lehetővé téve ritka betegségekhez diagnózis támogatás.</p>
+        <div class="card-details">Az AI képes digitális modelleket létrehozni, amelyek statisztikailag hasonlók valódi betegekhez, de nem köthetők élő személyekhez – adatvédelem és diagnosztika pontosság közt egyensúly. Magyarország az AI biztosítottságban úttörő.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha ritka betegségek diagnózisa lassú vagy költséges, AI szintetikus adatai gyorsíthatják a feltárást és kezelési lehetőségeket.</div>
+        <a href="https://karpatinfo.net/mozaik/vilag-orvostudomany-mesterseges-intelligencia-2026-03-08" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Kárpátinfo.net, Index.hu</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Biztonság" data-tema="ai">
+      <div class="card-accent" style="background:#6c757d"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#6c757d;border-color:#6c757d20;background:#6c757d10">🛡️ Biztonság</span>
+          <span class="item-date">📅 2026-03-08</span>
+        </div>
+        <h2 class="card-title">ChatGPT, Claude, Gemini szimulált háborús forgatókönyv 95%-ban atomfegyvert használ</h2>
+        <p class="card-summary">King's College London kutatás azt mutatja, hogy az AI chatbotok szimulált konfliktusban a legtöbb esetben (95%) táktikai magfegyvereket használnának, emberi félelmet nem értékelnék be.</p>
+        <div class="card-details">Kenneth Payne professzor tesztelésében ChatGPT, Claude, Gemini 3 modellek egyensúlyoztak konfliktusban. Az AI a pillanatnyi előnyt eszköznek tekinti, nem visszafordíthatatlan határnak – az emberi rizikóaverzió hiányzik.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Fontos biztonsági kutatás: AI autonómia és döntéshozatal emberi nélkül katasztrofális lehet – kritikus biztonsági szűrésre van szükség.</div>
+        <a href="https://www.origo.hu/tudomany/2026/03/mesterseges-intelligencia-atomfegyver" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Origo.hu</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Alkalmazások" data-tema="ai">
+      <div class="card-accent" style="background:#7b2d8b"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#7b2d8b;border-color:#7b2d8b20;background:#7b2d8b10">🚀 Alkalmazások</span>
+          <span class="item-date">📅 2026-03-12</span>
+        </div>
+        <h2 class="card-title">Microsoft Copilot egészségügyi adatok elkülönítve, 230 orvostanács, ISO/IEC 42001 tanúsítvány</h2>
+        <p class="card-summary">A Microsoft Copilot Health ISO/IEC 42001 AI tanúsítványt ért el, erős adatvédelmi intézkedésekkel (titkosítás, hozzáférés-vezérlés), 230 orvostanácsi visszajelzéssel.</p>
+        <div class="card-details">Az egészségügyi adatokat nem használják modelloktatáshoz. Az adatok szeparáltak az általános Copilot-tól, szigorú hozzáférés-vezérléssel. A tanúsítvány harmadik féltől független auditált bizonyítéka az AI biztonságnak.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha intézményi szintű biztonsági követelmények vannak, a tanúsítvány felelősséget biztosít az egészségügyi adatok kezeléséről.</div>
+        <a href="https://thenextweb.com/news/microsoft-launches-copilot-health" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Multiple sources</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+    <article class="news-card" data-category="Magyar" data-tema="ai">
+      <div class="card-accent" style="background:#e63946"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="category-badge" style="color:#e63946;border-color:#e6394620;background:#e6394610">🇭🇺 Magyar</span>
+          <span class="item-date">📅 2026-03-13</span>
+        </div>
+        <h2 class="card-title">SUSE tanulmány: AI 2026-ban infrastruktúra szerves részévé válik</h2>
+        <p class="card-summary">A SUSE IT tanulmánya azt fejtette ki, hogy 2026-ban az AI az infrastruktúra szerves részévé válik – autonóm ügynökök Kubernetes szisztémákban, önálló döntési logikával.</p>
+        <div class="card-details">Az IT csapatok nem csupán AI-támogatott, hanem AI-felügyelt infrastruktúrán dolgoznak. Az agentic szisztémek hibaelhárítást, erőforrás-optimalizálást, költség-transzparenciát biztosítanak.</div>
+        <div class="card-relevance"><span class="relevance-label">💡 Miért érdekes és mi a haszna neked?</span> Ha IT infrastruktúra operációkat üzemeltetsz, AI-ügynökök felügyelete a jövő – a rendszerek önálló tanulnak, optimalizálódnak.</div>
+        <a href="https://hirek.prim.hu/cikk/2026/03/13/az_ai_kilep_a_chatablakbol_igy_valik_az_infrastruktura_reszeve" class="card-link" target="_blank" rel="noopener nofollow">
+          <span>Prim.hu</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </article></div>
+  <footer>
+    <p>Generálva <strong>Claude AI</strong> által · <strong>2026. 03. 14. 16:59:21 (Budapest)</strong> · Minden héten frissül automatikusan</p>
+    <div class="legal">
+      <p><strong>Jogi nyilatkozat:</strong> Ez az oldal nyilvánosan elérhető hírek automatikusan generált, saját szavakkal írt összefoglalóit tartalmazza tájékoztatási céllal. Az összefoglalók mesterséges intelligencia által készített, önálló átfogalmazások – nem az eredeti cikkek másolatai. Minden hírhez feltüntetésre kerül az eredeti forrás. A szerzői jogok az eredeti szerzőket és kiadókat illetik. Tartalomeltávolítási kérelem esetén jelezze és haladéktalanul intézkedünk.</p>
+      <p><strong>Legal notice:</strong> This site publishes automatically generated summaries of publicly available news articles for informational purposes. All summaries are independently rewritten and do not reproduce original articles. Each item credits and links to the original source. All copyrights remain with the respective authors and publishers. If you are a rights holder and wish to request removal, please contact us and we will act promptly.</p>
+    </div>
+  </footer>
+</div>
+<script>
+let aKat='mind', aTema='mind';
+function filter(btn,cat){
+  document.querySelectorAll('.filter-btn:not(.tema-btn)').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); aKat=cat; frissit();
+}
+function filterTema(btn,tema){
+  document.querySelectorAll('.tema-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); aTema=tema; frissit();
+}
+function frissit(){
+  let v=0;
+  document.querySelectorAll('.news-card').forEach(card=>{
+    const show=(aKat==='mind'||card.dataset.category===aKat)&&(aTema==='mind'||card.dataset.tema===aTema);
+    card.classList.toggle('hidden',!show);
+    if(show)v++;
+  });
+  document.getElementById('count').textContent=v;
+}
+</script>
+</body>
+</html>

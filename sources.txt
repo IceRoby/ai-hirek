@@ -185,3 +185,12 @@ domain | ITE.hu Magyar AI   | klub.ite.hu
 #domain | ZDNet AI          | zdnet.com
 #domain | The Register AI   | theregister.com
 #domain | TechRepublic AI   | techrepublic.com
+
+# #auto [2026-03-14] – Magyar nyelvű, friss mesterséges intelligencia hírek és elemzések, naprakész információk a hazai AI fejlesztésekről
+#auto | rss | AI Hírfolyam (aihirfolyam.hu) | https://aihirfolyam.hu/
+
+# #auto [2026-03-14] – Magyar technológiai hírek, AI infrastruktúra trendek és vállalati fejlesztések magyar szemszögből
+#auto | rss | Prim.hu AI és Technológia rovatai | https://hirek.prim.hu/
+
+# #auto [2026-03-14] – AI biztonsági kutatások, autonóm ügynök képességek értékelése, frontier AI rizikók elemzése
+#auto | rss | METR – Model Evaluation and Threat Research | https://metr.org/

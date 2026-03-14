@@ -105,6 +105,10 @@ category | Innováció          | altalanos | wp1, wp2
 
 # ================================================================
 # AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT KATEGÓRIÁK
+# #auto [2026-03-14] – Speciális egészségügyi AI megoldások, Copilot Health, egészségügyi adatintegráció, diagnózis támogatás
+#auto category | Healthcare AI | ai | mind
+# #auto [2026-03-14] – Az agentic AI fizikai világba való kiterjesztése, emberi jellegű robotok és autonóm rendszerek mind a robotikában, mind az iparban
+#auto category | Fizikai AI és Robotika | ai | mind
 # (#auto jelzéssel kerülnek ide - töröld a #auto-t ha megtartod)
 # ================================================================
 

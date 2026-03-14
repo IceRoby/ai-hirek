@@ -79,6 +79,12 @@ topic | jog | GDPR, EU regulation, copyright, adatvédelem, törvény | | Jogi �
 
 # ================================================================
 # AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT TÉMÁK
+
+# #auto [2026-03-14] – Claude vizuális kimenet generálása (diagram, grafikon) natívan a beszélgetésben – új felhasználói élmény
+#auto topic | claude_visual_reasoning | Claude, vizuális generálás, diagramok, interactive visuals | | Nagy cégek, Alkalmazások
+
+# #auto [2026-03-14] – AI ügynökök képesek önálló, többlépéses feladatokat végezni alkalmazások között – alapvető paradigmaváltás
+#auto topic | agentic_ai_automation | agentic AI, multi-step tasks, Gemini automation, autonomous agents | | Nagy cégek, Technológia, Innováció
 # (#auto jelzéssel kerülnek ide - te döntöd el megtartod-e)
 # ================================================================
 

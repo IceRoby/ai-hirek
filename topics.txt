@@ -1,0 +1,85 @@
+# ================================================================
+# TÉMÁK KONFIGURÁCIÓS FÁJL (topics.txt)
+# ================================================================
+#
+# Minden téma egy sor. Formátum:
+#   topic | tema_kulcs | kulcsszavak | kizárt szavak | leírás
+#
+# MEZŐK MAGYARÁZATA:
+#   tema_kulcs   → rövid egyedi azonosító, ékezet nélkül, kisbetű
+#                  (pl: ai, coaching, marketing, sajat_tema)
+#   kulcsszavak  → vesszővel elválasztva, max 10 db
+#                  Angolul hatékonyabb! Ezekre keres a webes kereséskor.
+#   kizárt szavak→ vesszővel elválasztva (elhagyható, hagyd üresen)
+#                  Ezekkel kapcsolatos hírek NEM kerülnek be.
+#   leírás       → rövid magyar szöveg, csak tájékoztató
+#
+# HOGYAN ADJ HOZZÁ ÚJ TÉMÁT:
+#   1. Másolj le egy meglévő sort
+#   2. Írd felül az adatokat
+#   3. Add hozzá a config.txt aktiv_temak sorához is!
+#   4. Hozz létre kategóriákat a categories.txt-ben is
+#
+# AZ AI AUTOMATIKUSAN BŐVÍTI:
+#   Ha a webes keresés során új releváns témát fedez fel,
+#   #auto jelzéssel hozzáírja a fájl aljára.
+#   Te döntöd el megtartod-e (töröld a #auto-t) vagy törlöd.
+#
+# AKTÍV TÉMÁKAT a config.txt-ben kell beállítani:
+#   config | aktiv_temak | ai, coaching
+# ================================================================
+
+
+# ================================================================
+# AKTÍV TÉMÁK
+# ================================================================
+
+# Mesterséges intelligencia
+topic | ai | OpenAI, Claude, Gemini, AGI, LLM, robotics, AI safety | crypto, NFT, blockchain | Mesterséges intelligencia hírek
+
+# Coaching és személyes fejlődés
+topic | coaching | ICF, executive coaching, burnout, leadership, reziliencia, growth mindset | | Coaching, leadership, személyes fejlődés
+
+# Digitális marketing
+topic | marketing | SEO, Google algorithm, TikTok ads, content marketing, email marketing, influencer | | Digitális marketing és SEO hírek
+
+# Egészség és wellness
+topic | egeszseg | longevity, biohacking, mikrobiom, mental health, nutrition, fitness | | Egészség, wellness, orvostudomány
+
+# Pénzügy és befektetés
+topic | penzugy | ETF, FIRE movement, passzív jövedelem, részvény, befektetés, gazdaság | NFT, meme coin | Pénzügy, befektetés, gazdaság
+
+# Ingatlan
+topic | ingatlan | ingatlanpiac, lakásárak, jelzálog, ingatlanbefektetés, property | | Ingatlanpiac hírek
+
+# Általános technológia
+topic | tech | Apple, Google, Microsoft, startup, cybersecurity, gadget, szoftver | | Tech hírek (nem csak AI)
+
+# Üzlet és vállalkozás
+topic | uzlet | entrepreneurship, startup, e-commerce, remote work, vállalkozás | | Üzleti és vállalkozói hírek
+
+# Sport
+topic | sport | foci, labdarúgás, NBA, átigazolás, Premier League, Forma-1 | | Sportviiág hírek
+
+# Jog és szabályozás
+topic | jog | GDPR, EU regulation, copyright, adatvédelem, törvény | | Jogi és szabályozási hírek
+
+
+# ================================================================
+# TARTALÉK / INAKTÍV TÉMÁK
+# (# eltávolításával aktiválható, majd add a config.txt-hez is)
+# ================================================================
+
+#topic | kriptovaluta | Bitcoin, Ethereum, DeFi, Web3, blockchain | meme coin, NFT | Kriptovaluta hírek
+#topic | fenntarthatosag | sustainability, ESG, green energy, klímaváltozás, megújuló | | Fenntarthatóság és zöld gazdaság
+#topic | oktatas | edtech, online learning, felsőoktatás, tanulás, készségfejlesztés | | Oktatás és tanulás
+#topic | startup_hun | magyar startup, innováció Magyarország, VC befektetés | | Magyar startup ökoszisztéma
+#topic | mestertersegek | handmade, etsy, kézműves, kis vállalkozás | | Kézműves és kis vállalkozás
+
+
+# ================================================================
+# AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT TÉMÁK
+# (#auto jelzéssel kerülnek ide - te döntöd el megtartod-e)
+# ================================================================
+
+# (ide írja az AI az új javaslatokat)

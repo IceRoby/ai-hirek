@@ -1,0 +1,111 @@
+# ================================================================
+# KATEGÓRIÁK KONFIGURÁCIÓS FÁJL (categories.txt)
+# ================================================================
+#
+# Két dolgot szabályoz ez a fájl:
+#   1. Milyen kategóriák léteznek (és melyik témához tartoznak)
+#   2. Melyik WP oldalra kerüljenek az adott kategóriájú hírek
+#
+# FORMÁTUM:
+#   category | kategória neve | tema_kulcs | wp_oldalak
+#
+# MEZŐK MAGYARÁZATA:
+#   kategória neve → magyarul, ez jelenik meg a weboldalon és WP-ben
+#   tema_kulcs     → melyik téma híreibe tartozik (topics.txt-ből)
+#                    "altalanos" = minden témában megjelenhet
+#   wp_oldalak     → vesszővel elválasztva melyik WP oldalra kerüljön
+#                    "mind" = minden WP oldalra
+#                    "wp1,wp3" = csak az 1. és 3. oldalra
+#                    "" (üres) = sehova (csak GitHub Pages-en jelenik meg)
+#
+# HOGYAN ADJ HOZZÁ ÚJ KATEGÓRIÁT:
+#   Írj be egy új sort a megfelelő téma alá.
+#   Az AI is bővíti automatikusan #auto jelzéssel.
+#
+# FONTOS: ha egy WP oldal típusa "altalanos" (wordpress.txt-ben),
+#   akkor minden kategória híreit megkapja, nem csak az itt megadottakat.
+#   A szűrés csak "tema:valami" típusú WP oldalaknál érvényes.
+# ================================================================
+
+
+# ================================================================
+# AI TÉMÁHOZ TARTOZÓ KATEGÓRIÁK
+# ================================================================
+
+category | Magyar AI          | ai        | mind
+category | Nagy cégek         | ai        | mind
+category | Startupok          | ai        | wp1, wp2
+category | Szabályozás        | ai        | mind
+category | Tudomány           | ai        | wp1, wp3
+category | Alkalmazások       | ai        | mind
+category | Biztonság          | ai        | wp1, wp2
+
+
+# ================================================================
+# COACHING TÉMÁHOZ TARTOZÓ KATEGÓRIÁK
+# ================================================================
+
+category | Magyar coaching    | coaching  | mind
+category | Leadership         | coaching  | wp2, wp4
+category | Személyes fejlődés | coaching  | wp2, wp4
+category | Workplace          | coaching  | wp2
+category | Coaching eszközök  | coaching  | wp4
+category | Kutatás            | coaching  | wp4
+category | Inspiráció         | coaching  | wp2, wp4
+
+
+# ================================================================
+# MARKETING TÉMÁHOZ TARTOZÓ KATEGÓRIÁK
+# ================================================================
+
+category | Magyar marketing   | marketing | mind
+category | SEO                | marketing | wp1, wp2
+category | Social Media       | marketing | wp1, wp2
+category | Content            | marketing | wp2
+category | Email marketing    | marketing | wp2
+category | Analytics          | marketing | wp2
+category | Marketing eszközök | marketing | wp2
+
+
+# ================================================================
+# EGÉSZSÉG TÉMÁHOZ TARTOZÓ KATEGÓRIÁK
+# ================================================================
+
+category | Magyar egészség    | egeszseg  | mind
+category | Orvostudomány      | egeszseg  | wp1
+category | Táplálkozás        | egeszseg  | wp1
+category | Mentális egészség  | egeszseg  | wp1
+category | Fitness            | egeszseg  | wp1
+category | Egészség kutatás   | egeszseg  | wp1
+category | Megelőzés          | egeszseg  | wp1
+
+
+# ================================================================
+# PÉNZÜGY TÉMÁHOZ TARTOZÓ KATEGÓRIÁK
+# ================================================================
+
+category | Magyar pénzügy     | penzugy   | mind
+category | Befektetés         | penzugy   | wp1
+category | Gazdaság           | penzugy   | wp1
+category | Kripto             | penzugy   | wp2
+category | Személyes pénzügy  | penzugy   | wp1, wp2
+category | Pénzügyi startupok | penzugy   | wp2
+category | Pénzügyi szabályozás| penzugy  | wp1
+
+
+# ================================================================
+# ÁLTALÁNOS / TÖBB TÉMÁBAN IS MEGJELENŐ KATEGÓRIÁK
+# ================================================================
+
+category | Magyar             | altalanos | mind
+category | Nemzetközi         | altalanos | mind
+category | Technológia        | altalanos | wp1
+category | Innováció          | altalanos | wp1, wp2
+
+
+# ================================================================
+# AI ÁLTAL AUTOMATIKUSAN FELFEDEZETT KATEGÓRIÁK
+# (#auto jelzéssel kerülnek ide - töröld a #auto-t ha megtartod)
+# ================================================================
+
+# (ide írja az AI az új kategória javaslatokat)

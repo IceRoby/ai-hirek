@@ -1,0 +1,138 @@
+# ================================================================
+# WORDPRESS OLDALAK KONFIGURÁCIÓS FÁJL (wordpress.txt)
+# ================================================================
+#
+# Minden WordPress oldal beállításai itt vannak.
+# Formátum: wp | kulcs | érték
+#
+# OLDAL AZONOSÍTÓK: wp1, wp2, wp3, wp4, wp5...
+# Minden oldalhoz ugyanazok a kulcsok tartoznak, csak a szám változik.
+#
+# KÖTELEZŐ MEZŐK minden oldalhoz:
+#   wp{N}_url    → az oldal URL-je (https://... trailing slash nélkül)
+#   wp{N}_user   → WordPress felhasználónév
+#
+# OPCIONÁLIS MEZŐK:
+#   wp{N}_tipus        → altalanos / tema:kulcs / kategoriak:Kat1,Kat2
+#   wp{N}_post_status  → publish / draft / pending
+#   wp{N}_post_mode    → summary / individual / append
+#   wp{N}_kategoria    → WP kategória neve (létrehozza ha nincs)
+#   wp{N}_szerzo       → szerző neve (pontosan ahogy WP-ben van)
+#   wp{N}_kep_url      → fix kép URL (ha nincs, Pexels/Unsplash keres)
+#   wp{N}_kep_kulcsszo → kép keresési kulcsszó Pexels/Unsplash-en
+#
+# OLDAL TÍPUSOK (wp{N}_tipus):
+#   altalanos          → minden aktív téma minden híre felkerül
+#   tema:ai            → csak AI témájú hírek
+#   tema:coaching      → csak coaching témájú hírek
+#   kategoriak:Kat1,Kat2 → csak ezekből a kategóriákból kerülnek fel hírek
+#                          (a categories.txt-ben definiált nevek)
+#
+# POST MÓD (wp{N}_post_mode):
+#   summary    → 1 összefoglaló post (ITE.hu stílus: 1 kép, hírek egymás után)
+#   individual → minden hír külön post (jobb SEO-hoz)
+#   append     → hozzáfűz a napi posthoz (óránkénti futáshoz ideális,
+#                az új hírek mindig a tetejére kerülnek)
+#
+# APP PASSWORDÖK → GitHub Secrets-ben (WP1_APP_PASSWORD, WP2_APP_PASSWORD...)
+# KÉP API KULCSOK → GitHub Secrets-ben (PEXELS_API_KEY, UNSPLASH_API_KEY)
+#
+# RÉSZLETES BEÁLLÍTÁSI ÚTMUTATÓ: SETUP_WP.md
+# ================================================================
+
+
+# ================================================================
+# WP1 - ÁLTALÁNOS HÍREK OLDAL #1
+# ================================================================
+# Minden aktív témából kap híreket.
+# Uncommenteld és töltsd ki!
+
+#wp | wp1_url          | https://elso-oldalad.hu
+#wp | wp1_user         | admin
+#wp | wp1_tipus        | altalanos
+#wp | wp1_post_status  | publish
+#wp | wp1_post_mode    | summary
+#wp | wp1_kategoria    | Hírek
+#wp | wp1_szerzo       | Admin
+#wp | wp1_kep_url      | https://elso-oldalad.hu/wp-content/uploads/alapkep.jpg
+#wp | wp1_kep_kulcsszo | news technology
+
+
+# ================================================================
+# WP2 - ÁLTALÁNOS HÍREK OLDAL #2
+# ================================================================
+# Szintén minden témából, de más beállításokkal.
+
+#wp | wp2_url          | https://masodik-oldalad.hu
+#wp | wp2_user         | admin
+#wp | wp2_tipus        | altalanos
+#wp | wp2_post_status  | draft
+#wp | wp2_post_mode    | individual
+#wp | wp2_kategoria    | Technológia
+#wp | wp2_szerzo       |
+#wp | wp2_kep_url      |
+#wp | wp2_kep_kulcsszo | technology innovation
+
+
+# ================================================================
+# WP3 - TÉMASPECIFIKUS: AI
+# ================================================================
+# Csak AI témájú hírek kerülnek fel.
+
+#wp | wp3_url          | https://ai-oldalad.hu
+#wp | wp3_user         | admin
+#wp | wp3_tipus        | tema:ai
+#wp | wp3_post_status  | publish
+#wp | wp3_post_mode    | append
+#wp | wp3_kategoria    | AI Hírek
+#wp | wp3_szerzo       | Admin
+#wp | wp3_kep_url      | https://ai-oldalad.hu/wp-content/uploads/ai-cover.jpg
+#wp | wp3_kep_kulcsszo | artificial intelligence
+
+
+# ================================================================
+# WP4 - TÉMASPECIFIKUS: COACHING
+# ================================================================
+# Csak coaching témájú hírek.
+
+#wp | wp4_url          | https://coaching-oldalad.hu
+#wp | wp4_user         | admin
+#wp | wp4_tipus        | tema:coaching
+#wp | wp4_post_status  | publish
+#wp | wp4_post_mode    | summary
+#wp | wp4_kategoria    | Coaching Hírek
+#wp | wp4_szerzo       |
+#wp | wp4_kep_url      |
+#wp | wp4_kep_kulcsszo | coaching leadership
+
+
+# ================================================================
+# WP5 - KATEGÓRIA ALAPÚ SZŰRÉS
+# ================================================================
+# Csak bizonyos kategóriájú hírek kerülnek fel.
+# Pl. csak a "Leadership" és "Személyes fejlődés" kategóriák.
+
+#wp | wp5_url          | https://otodik-oldalad.hu
+#wp | wp5_user         | admin
+#wp | wp5_tipus        | kategoriak:Leadership,Személyes fejlődés,Inspiráció
+#wp | wp5_post_status  | publish
+#wp | wp5_post_mode    | summary
+#wp | wp5_kategoria    | Fejlődés
+#wp | wp5_szerzo       |
+#wp | wp5_kep_url      |
+#wp | wp5_kep_kulcsszo | personal growth leadership
+
+
+# ================================================================
+# SABLON ÚJABB OLDALAKHOZ (wp6, wp7...)
+# ================================================================
+
+#wp | wp6_url          | https://hatodik-oldalad.hu
+#wp | wp6_user         | admin
+#wp | wp6_tipus        | altalanos
+#wp | wp6_post_status  | publish
+#wp | wp6_post_mode    | summary
+#wp | wp6_kategoria    |
+#wp | wp6_szerzo       |
+#wp | wp6_kep_url      |
+#wp | wp6_kep_kulcsszo |

@@ -51,7 +51,8 @@ config | aktiv_temak | ai
 # csak az RSS feedekre Ã©s a modell tudÃ¡sÃ¡ra tÃ¡maszkodik.
 # Anthropic Claude-dal a legjobb az Ã©lÅ webes keresÃ©s!
 #
-config | modell | claude-sonnet-4-6
+# config | modell | claude-sonnet-4-6
+config | modell | gemini-3-flash 
 
 
 # ----------------------------------------------------------------
